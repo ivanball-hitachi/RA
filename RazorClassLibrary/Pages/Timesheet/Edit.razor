@@ -1,0 +1,288 @@
+﻿@page "/add_timesheet"
+@page "/update_timesheet/{Id:int}"
+
+@using Domain.Common
+@using Domain.Main.DTO
+@using Domain.Timesheets.DTO
+@using RazorClassLibrary.Services
+@using AutoMapper
+@inject ITimesheetLineService timesheetLineService
+@inject IEntityServices entityServices
+@inject IMapper mapper
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@if (Id > 0)
+{
+   <h2>Edit Timesheet</h2>
+}
+else
+{
+    <h2>New Timesheet</h2>
+}
+<hr />
+<div class="row col-lg-6">
+    <EditForm Model="@timesheet" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+        <FluentValidationValidator />
+        <ValidationSummary />
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">TimesheetNumber</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" disabled="disabled" value="@($"{timesheet.TimesheetNumber}")" />
+            </div>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Employee</label>
+            <div class="col-sm-8">
+                <InputSelect id="employee" @bind-Value="timesheet.EmployeeId" class="form-control" >
+                    @foreach (var employee in employees)
+                    {
+                        <option value="@employee.Id">@employee.FullName</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheet.EmployeeFullName) />
+            </div>
+        </div>
+@if (Id == 0)
+{
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Date</label>
+            <div class="col-sm-8">
+                <InputDate @bind-Value="PeriodDate" class="form-control" />
+            </div>
+        </div>
+}
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Timesheet period</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" disabled="disabled" value="@($"{timesheet.PeriodStartDate.ToString("MM/dd/yyyy")} - {timesheet.PeriodEndDate.ToString("MM/dd/yyyy")}")" />
+            </div>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">ApprovalStatus</label>
+            <div class="col-sm-8">
+                <InputSelect id="approvalStatus" @bind-Value="timesheet.ApprovalStatusId" class="form-control" disabled="disabled" >
+                    @foreach (var approvalStatus in approvalStatuses)
+                    {
+                        <option value="@approvalStatus.Id">@approvalStatus.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheet.ApprovalStatusName) />
+            </div>
+        </div>
+        <button type="submit" @onclick="@(()=> action = "Save")" class="mt-2 btn btn-primary" disabled="@timesheet.IsReadOnly">Save</button>
+        <button type="submit" @onclick="@(()=> action = "Submit")" class="mt-2 btn btn-primary" disabled="@timesheet.IsReadOnly">Submit</button>
+        <NavLink href="/timesheets" class="btn btn-link">Back</NavLink>
+    </EditForm>
+</div>
+<br />
+@if (Id > 0)
+{
+    <h1>Timesheet Lines</h1>
+    <hr />
+    <br />
+    <div class="row mb-3">
+@if (!timesheet.IsReadOnly)
+{
+        <div class="col">
+            <NavLink href="@($"add_timesheetline/{Id}")" class="btn btn-sm btn-success mb-2">Add Timesheet Line</NavLink>
+        </div>
+}
+        <div class="input-group col text-md-right">
+            <input type="text" class="form-control" placeholder="Search" @bind="this.searchValue" @onkeyup="SearchBoxKeyPress" />
+            <div class="input-group-btn">
+                <button class="btn btn-default" @onclick="SearchClick">
+                    <i class="oi oi-magnifying-glass" title="search" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="input-group-btn">
+                <button class="btn btn-default" @onclick="ClearSearch">
+                    <i class="oi oi-x" title="clear" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (timesheetLines is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Legal entity</th>
+                    <th>Location</th>
+                    <th>Customer</th>
+                    <th>Project</th>
+                    <th>Activity</th>
+                    <th>Category</th>
+                    @for (var i = 0; i < (timesheet.PeriodEndDate.Date - timesheet.PeriodStartDate.Date).Days + 1; i++)
+                    {
+                        <th>@timesheet.PeriodStartDate.AddDays(i).ToString("ddd MM/dd")</th>
+                    }
+                    <th>Line property</th>
+                    <th>Resource type</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var timesheetLine in timesheetLines)
+                {
+                    <tr>
+                        <td class="align-middle" style="white-space: nowrap">
+                            <NavLink href="@($"view_timesheetline/{Id}/{timesheetLine.Id}")" class="oi oi-eye text-primary mr-3 nounderline align-middle px-3"></NavLink>
+@if (!timesheet.IsReadOnly)
+{
+                            <NavLink href="@($"update_timesheetline/{Id}/{timesheetLine.Id}")" class="oi oi-pencil text-warning mr-2 nounderline align-middle"></NavLink>
+                            <button type="submit" @onclick="@(()=> DeleteTimesheetLine(Id, timesheetLine.Id))" class="btn btn-link oi oi-trash text-danger mr-1 nounderline align-middle">
+                                <span></span>
+                            </button>
+}
+                        </td>
+                        <td class="align-middle">@timesheetLine.LegalEntityName</td>
+                        <td class="align-middle">@timesheetLine.LocationName</td>
+                        <td class="align-middle">@timesheetLine.CustomerName</td>
+                        <td class="align-middle">@timesheetLine.ProjectName</td>
+                        <td class="align-middle">@timesheetLine.ActivityName</td>
+                        <td class="align-middle">@timesheetLine.CategoryName</td>
+                        @foreach (var timesheetLineDetail in timesheetLine.TimesheetLineDetails)
+                        {
+                            <td class="align-middle">@(timesheetLineDetail.Hours == 0 ? "" : timesheetLineDetail.Hours.ToString("0.00"))</td>
+                        }
+                        <td class="align-middle">@timesheetLine.LinePropertyName</td>
+                        <td class="align-middle">@timesheetLine.EmployeeTypeName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <Pager Result=@paginationMetadata PageChanged=PagerPageChanged />
+    }
+}
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private int currentPage = 1;
+    private string searchValue { get; set; } = default!;
+    private PaginationMetadata? paginationMetadata;
+    private TimesheetDTO timesheet = new();
+    private List<EmployeeDTO> employees { get; set; } = new();
+    private List<ApprovalStatusDTO> approvalStatuses { get; set; } = new();
+    private List<TimesheetLineDTO>? timesheetLines;
+    private string action = "";
+
+    private DateTime periodDate = DateTime.Now;
+    private DateTime PeriodDate
+    {
+        get { return periodDate; }
+        set
+        {
+            periodDate = value;
+#pragma warning disable CS4014 // Supressing CS4014 compiler message: Because this call is not awaited, execution of the current method continues before the call is completed. Consider applying the await operator to the result of the call.
+            UpdatePeriodDates();
+#pragma warning restore CS4014 // Restoring CS4014 compiler message: Because this call is not awaited, execution of the current method continues before the call is completed. Consider applying the await operator to the result of the call.
+        }
+    }
+
+    private async Task UpdatePeriodDates()
+    {
+        timesheet.PeriodStartDate = await entityServices.TimesheetService.GetPeriodStartDate(periodDate);
+        timesheet.PeriodEndDate = await entityServices.TimesheetService.GetPeriodEndDate(periodDate);
+        StateHasChanged();
+    }
+
+    protected async override void OnParametersSet()
+    {
+        employees = (await entityServices.EmployeeService.GetAllAsync())!.ToList();
+        approvalStatuses = (await entityServices.ApprovalStatusService.GetAllAsync())!.ToList();
+
+        await RefreshPageAsync();
+    }
+
+    private async Task RefreshPageAsync()
+    {
+        if (Id > 0)
+        {
+            var response = await entityServices.TimesheetService.GetByIdAsync(Id);
+            if (response is not null)
+            {
+                timesheet = mapper.Map<TimesheetDTO>(response);
+                (timesheetLines, paginationMetadata) = await timesheetLineService
+                    .GetTimesheetLinesAsync(Id, searchValue, currentPage, 10);
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            timesheet = new();
+            timesheet.TimesheetNumber = await entityServices.TimesheetService.GetNewTimesheetNumber();
+            await UpdatePeriodDates();
+        }
+    }
+
+    private async void HandleValidSubmit()
+    {
+        bool success = false;
+        if (Id > 0)
+        {
+            var timesheetForUpdate = mapper.Map<TimesheetForUpdateDTO>(timesheet);
+            success = await entityServices.TimesheetService.UpdateAsync(timesheetForUpdate, action);
+        }
+        else
+        {
+            var timesheetForCreation = mapper.Map<TimesheetForCreationDTO>(timesheet);
+            success = await entityServices.TimesheetService.CreateAsync(timesheetForCreation, action);
+        }
+
+        if (success)
+        {
+            navigationManager.NavigateTo($"timesheets");
+        }
+        else
+        {
+            toastService.ShowError("Something went wrong while saving record.");
+        }
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        toastService.ShowError("Please, correct invalid fields.");
+    }
+
+    private async void DeleteTimesheetLine(int timesheetId, int timesheetLineId)
+    {
+        var success = await timesheetLineService.DeleteTimesheetLineAsync(timesheetId, timesheetLineId);
+        if (success)
+        {
+            await RefreshPageAsync();
+        }
+    }
+
+    protected async Task SearchBoxKeyPress(KeyboardEventArgs ev)
+    {
+        if (ev.Key == "Enter")
+        {
+            await SearchClick();
+        }
+    }
+
+    protected async Task SearchClick()
+    {
+        await RefreshPageAsync();
+    }
+
+    protected async Task ClearSearch()
+    {
+        searchValue = default!;
+        await RefreshPageAsync();
+    }
+
+    protected async Task PagerPageChanged(int page)
+    {
+        currentPage = page;
+        await RefreshPageAsync();
+    }
+}

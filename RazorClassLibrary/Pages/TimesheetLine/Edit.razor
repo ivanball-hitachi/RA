@@ -1,0 +1,233 @@
+﻿@page "/add_timesheetline/{TimesheetId:int}"
+@page "/update_timesheetline/{TimesheetId:int}/{Id:int}"
+
+@using Domain.Common
+@using Domain.Main.DTO
+@using Domain.Timesheets.DTO
+@using RazorClassLibrary.Services
+@using AutoMapper
+@inject ITimesheetLineService timesheetLineService
+@inject IEntityServices entityServices
+@inject IMapper mapper
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@if (Id > 0)
+{
+   <h2>Edit TimesheetLine</h2>
+}
+else
+{
+    <h2>New TimesheetLine</h2>
+}
+<hr />
+<EditForm Model="@timesheetLine" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+    <div class="row col-lg-6">
+        <FluentValidationValidator />
+        <ValidationSummary />
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Legal Entity</label>
+            <div class="col-sm-8">
+                <InputSelect id="legalEntity" @bind-Value="timesheetLine.LegalEntityId" class="form-control" >
+                    @foreach (var legalEntity in legalEntities)
+                    {
+                        <option value="@legalEntity.Id">@($"{legalEntity.Code} - {legalEntity.Name}")</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheetLine.LegalEntityName) />
+            </div>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Location</label>
+            <div class="col-sm-8">
+                <InputSelect id="location" @bind-Value="timesheetLine.LocationId" class="form-control">
+                    @foreach (var location in locations)
+                    {
+                        <option value="@location.Id">@($"{location.Name} - {location.CountryRegion}")</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheetLine.LocationName) />
+            </div>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Customer</label>
+            <div class="col-sm-8">
+                <InputSelect id="customer" @bind-Value="timesheetLine.CustomerId" class="form-control">
+                    @foreach (var customer in customers)
+                    {
+                        <option value="@customer.Id">@($"{customer.CustomerAccount} - {customer.Name}")</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheetLine.CustomerName) />
+            </div>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Project</label>
+            <div class="col-sm-8">
+                <InputSelect id="project" @bind-Value="timesheetLine.ProjectId" class="form-control">
+                    @foreach (var project in projects)
+                    {
+                        <option value="@project.Id">@($"{project.Code} - {project.Name}")</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheetLine.ProjectName) />
+            </div>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Activity</label>
+            <div class="col-sm-8">
+                <InputSelect id="activity" @bind-Value="timesheetLine.ActivityId" class="form-control">
+                    @foreach (var activity in activities)
+                    {
+                        <option value="@activity.Id">@($"{activity.Number} - {activity.Name}")</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheetLine.ActivityName) />
+            </div>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Category</label>
+            <div class="col-sm-8">
+                <InputSelect id="category" @bind-Value="timesheetLine.CategoryId" class="form-control">
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheetLine.CategoryName) />
+            </div>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">LineProperty</label>
+            <div class="col-sm-8">
+                <InputSelect id="lineProperty" @bind-Value="timesheetLine.LinePropertyId" class="form-control">
+                    @foreach (var lineProperty in lineProperties)
+                    {
+                        <option value="@lineProperty.Id">@lineProperty.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheetLine.LinePropertyName) />
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th style="width:15%">Day</th>
+                <th style="width:15%">Hours</th>
+                <th style="width:35%">Internal comment</th>
+                <th style="width:35%">External comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var timesheetLineDetail in timesheetLine.TimesheetLineDetails)
+            {
+            <tr>
+                <td class="align-middle">
+                    <label class="col-sm-4 col-form-label">@timesheetLineDetail.Day.ToString("ddd MM/dd")</label>
+                </td>
+                <td class="align-middle">
+                    <InputNumber @bind-Value="timesheetLineDetail.Hours" class="form-control" />
+                </td>
+                <td class="align-middle">
+                    <InputTextArea @bind-Value="timesheetLineDetail.InternalComment" class="form-control" />
+                </td>
+                <td class="align-middle">
+                    <InputTextArea @bind-Value="timesheetLineDetail.ExternalComment" class="form-control" />
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <button type="submit" class="mt-2 btn btn-primary" disabled="@timesheet.IsReadOnly">Save</button>
+    <NavLink href="@($"/update_timesheet/{TimesheetId}")" class="btn btn-link">Back</NavLink>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int TimesheetId { get; set; }
+    [Parameter]
+    public int Id { get; set; }
+
+    private TimesheetLineDTO timesheetLine = new();
+    private TimesheetDTO timesheet = new();
+    private List<LegalEntityDTO> legalEntities { get; set; } = new();
+    private List<LocationDTO> locations { get; set; } = new();
+    private List<CustomerDTO> customers { get; set; } = new();
+    private List<ProjectDTO> projects { get; set; } = new();
+    private List<ActivityDTO> activities { get; set; } = new();
+    private List<CategoryDTO> categories { get; set; } = new();
+    private List<LinePropertyDTO> lineProperties { get; set; } = new();
+
+    protected async override void OnParametersSet()
+    {
+        legalEntities = (await entityServices.LegalEntityService.GetAllAsync())!.ToList();
+        locations = (await entityServices.LocationService.GetAllAsync())!.ToList();
+        customers = (await entityServices.CustomerService.GetAllAsync())!.ToList();
+        projects = (await entityServices.ProjectService.GetAllAsync())!.ToList();
+        activities = (await entityServices.ActivityService.GetAllAsync())!.ToList();
+        categories = (await entityServices.CategoryService.GetAllAsync())!.ToList();
+        lineProperties = (await entityServices.LinePropertyService.GetAllAsync())!.ToList();
+
+        timesheet = (await entityServices.TimesheetService.GetByIdAsync(TimesheetId))!;
+
+        if (Id > 0)
+        {
+            var response = await timesheetLineService.GetTimesheetLineByIdAsync(TimesheetId, Id);
+            if (response is not null)
+            {
+                timesheetLine = mapper.Map<TimesheetLineDTO>(response);
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            timesheetLine = new();
+            timesheetLine.TimesheetId = TimesheetId;
+            timesheetLine.PeriodStartDate = timesheet.PeriodStartDate;
+            timesheetLine.PeriodEndDate = timesheet.PeriodEndDate;
+            for (var i = 0; i < (timesheetLine.PeriodEndDate.Date - timesheetLine.PeriodStartDate.Date).Days + 1; i++)
+            {
+                var timesheetLineDetail = new TimesheetLineDetailDTO
+                    {
+                        Day = timesheetLine.PeriodStartDate.AddDays(i),
+                        Hours = 0,
+                        InternalComment = "",
+                        ExternalComment = ""
+                    };
+                timesheetLine.TimesheetLineDetails.Add(timesheetLineDetail);
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async void HandleValidSubmit()
+    {
+        bool success = false;
+        if (Id > 0)
+        {
+            var timesheetLineForUpdate = mapper.Map<TimesheetLineForUpdateDTO>(timesheetLine);
+            success = await timesheetLineService.UpdateTimesheetLineAsync(TimesheetId, timesheetLineForUpdate);
+        }
+        else
+        {
+            var timesheetLineForCreation = mapper.Map<TimesheetLineForCreationDTO>(timesheetLine);
+            success = await timesheetLineService.AddTimesheetLineAsync(TimesheetId, timesheetLineForCreation);
+        }
+
+        if (success)
+        {
+            navigationManager.NavigateTo($"update_timesheet/{TimesheetId}");
+        }
+        else
+        {
+           toastService.ShowError("Something went wrong while saving record.");
+        }
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        toastService.ShowError("Please, correct invalid fields.");
+    }
+}
