@@ -5,6 +5,8 @@ using FluentValidation;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Configuration.Main;
 using Infrastructure.Persistence.Configuration.Timesheets;
+using Infrastructure.Persistence.IdentityModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +22,13 @@ namespace Infrastructure
                //.EnableSensitiveDataLogging()
                //.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                b => b.MigrationsAssembly(typeof(ApplicationDBContext).Assembly.FullName)), ServiceLifetime.Transient);
+
+            services.AddDbContext<LoginFlowDBContext>(options =>
+               options.UseSqlite(configuration.GetConnectionString("HiSolTimesheetDBConnectionString"),
+               b => b.MigrationsAssembly(typeof(ApplicationDBContext).Assembly.FullName)), ServiceLifetime.Transient);
+
+            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<LoginFlowDBContext>()
+                .AddDefaultTokenProviders(); ;
 
             services.AddScoped<IApplicationDBContext>(provider => provider.GetService<ApplicationDBContext>()!);
             services.AddScoped(typeof(IRepository<,>), typeof(EFRepository<,>));

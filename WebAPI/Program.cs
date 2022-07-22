@@ -1,7 +1,10 @@
 using Application;
 using FluentValidation.AspNetCore;
 using Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 using WebAPI.Controllers;
 
 Log.Logger = new LoggerConfiguration()
@@ -33,6 +36,28 @@ builder.Services.AddCors(options =>
 builder.Host.UseSerilog();
 
 // Add services to the container.
+
+builder.Services.AddAuthentication(f =>
+{
+    f.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    f.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(k =>
+{
+    var Key = Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]);
+    k.SaveToken = true;
+    k.IncludeErrorDetails = true;
+    k.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Key),
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 builder.Services.AddControllers(options =>
 {
@@ -66,6 +91,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors(MyAllowSpecificOrigins);
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
