@@ -218,6 +218,10 @@ else
         else
         {
             timesheet = new();
+            if (LoginService.UserDetails?.Id is not null)
+            {
+                timesheet.EmployeeId = 1;
+            }
             timesheet.TimesheetNumber = await entityServices.TimesheetService.GetNewTimesheetNumber();
             await UpdatePeriodDates();
         }

@@ -7,6 +7,8 @@ using System.Security.Claims;
 using System.Text;
 using Infrastructure.Persistence.IdentityModels;
 using Application.Common.Interface;
+using Domain.Main.DTO;
+using Domain.Main;
 
 namespace WebAPI.Controllers
 {

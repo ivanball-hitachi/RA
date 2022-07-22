@@ -1,4 +1,4 @@
-﻿namespace MAUIBlazorApp.ViewModel;
+﻿namespace MAUIBlazorApp.ViewModels;
 
 public partial class BaseViewModel : ObservableObject
 {

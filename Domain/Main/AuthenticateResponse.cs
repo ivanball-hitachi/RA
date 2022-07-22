@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Persistence.IdentityModels
+﻿using Domain.Main.DTO;
+
+namespace Domain.Main
 {
     public class AuthenticateResponse
     {

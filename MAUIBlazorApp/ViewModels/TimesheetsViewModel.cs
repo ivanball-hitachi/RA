@@ -1,6 +1,6 @@
 ﻿using RazorClassLibrary.Services;
 
-namespace MAUIBlazorApp.ViewModel;
+namespace MAUIBlazorApp.ViewModels;
 
 public partial class TimesheetsViewModel : BaseViewModel
 {

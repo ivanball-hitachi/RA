@@ -1,4 +1,4 @@
-﻿namespace MAUIBlazorApp.View;
+﻿namespace MAUIBlazorApp.Views;
 
 public partial class MainPage : ContentPage
 {

@@ -3,6 +3,8 @@ using Blazored.Toast;
 using Infrastructure.Persistence.Configuration.Timesheets;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using MAUIBlazorApp.Views.Startup;
+using MAUIBlazorApp.ViewModels.Startup;
 
 namespace MAUIBlazorApp;
 
@@ -36,21 +38,28 @@ public static class MauiProgram
 
         builder.Services.AddAutoMapper(typeof(TimesheetDTOProfile));
 
-        builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
-        builder.Services.AddSingleton<IGeolocation>(Geolocation.Default);
-        builder.Services.AddSingleton<IMap>(Map.Default);
+        builder.Services.AddSingleton(Connectivity.Current);
+        builder.Services.AddSingleton(Geolocation.Default);
+        builder.Services.AddSingleton(Map.Default);
 
+        // Services
+        builder.Services.AddSingleton<ILoginService, LoginService>();
         builder.Services.AddSingleton(typeof(IEntityService<,,,>), typeof(EntityService<,,,>));
         builder.Services.AddSingleton<IEntityServices, EntityServices>();
-
         builder.Services.AddSingleton<ITimesheetLineService, TimesheetLineService>();
 
-        builder.Services.AddSingleton<TimesheetsViewModel>();
+        // Views
+        builder.Services.AddSingleton<LoginPage>();
+        builder.Services.AddSingleton<LoadingPage>();
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<BlazorPage>();
-
-        builder.Services.AddTransient<TimesheetDetailsViewModel>();
         builder.Services.AddTransient<DetailsPage>();
+
+        // View Models
+        builder.Services.AddSingleton<LoginPageViewModel>();
+        builder.Services.AddSingleton<LoadingPageViewModel>();
+        builder.Services.AddSingleton<TimesheetsViewModel>();
+        builder.Services.AddTransient<TimesheetDetailsViewModel>();
 
         return builder.Build();
     }

@@ -1,4 +1,4 @@
-﻿namespace MAUIBlazorApp.ViewModel;
+﻿namespace MAUIBlazorApp.ViewModels;
 
 [QueryProperty(nameof(Timesheet), "Timesheet")]
 public partial class TimesheetDetailsViewModel : BaseViewModel

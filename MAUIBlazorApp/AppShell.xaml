@@ -2,9 +2,10 @@
 <Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUIBlazorApp.AppShell"
-             xmlns:view="clr-namespace:MAUIBlazorApp.View"
+             xmlns:view="clr-namespace:MAUIBlazorApp.Views"
              Title="Timesheets"
-             FlyoutBehavior="Flyout">
+             FlyoutBehavior="Flyout"
+             xmlns:startupPages="clr-namespace:MAUIBlazorApp.Views.Startup">
 
     <Shell.Resources>
         <ResourceDictionary>
@@ -40,5 +41,20 @@
             ContentTemplate="{DataTemplate view:MainPage}"
             Route="MainPage" />
     </FlyoutItem>
+
+    <!--<ShellContent FlyoutItemIsVisible="False" Shell.FlyoutBehavior="Disabled"
+        ContentTemplate="{DataTemplate startupPages:LoadingPage}" Route="LoadingPage" />-->
+
+    <FlyoutItem Title="Login" Icon="moon.png">
+        <ShellContent Title="Login Page"
+            ContentTemplate="{DataTemplate startupPages:LoginPage}"
+            Route="LoginPage" />
+    </FlyoutItem>
+
+    <Shell.FlyoutFooter>
+        <StackLayout Padding="20">
+            <Button Text="Sign Out" Command="{Binding SignOutCommand}" />
+        </StackLayout>
+    </Shell.FlyoutFooter>
 
 </Shell>

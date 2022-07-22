@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Persistence.IdentityModels
+﻿namespace Domain.Main.DTO
 {
     public class UserDTO
     {
