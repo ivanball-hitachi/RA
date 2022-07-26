@@ -43,7 +43,8 @@ namespace Application.Main
                 searchValue = searchValue.Trim();
                 collection = collection.Where(p => 
                     p.FirstName.ToUpper().Contains(searchValue.ToUpper()) ||
-                    p.LastName.ToUpper().Contains(searchValue.ToUpper()));
+                    p.LastName.ToUpper().Contains(searchValue.ToUpper()) ||
+                    (p.FirstName + ' ' + p.LastName).ToUpper().Contains(searchValue.ToUpper()));
             }
 
             var totalItemCount = await collection.CountAsync();

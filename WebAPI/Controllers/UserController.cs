@@ -14,7 +14,7 @@ namespace WebAPI.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/user")]
     public class UserController : ControllerBase
     {
         private readonly IConfiguration _configuration;

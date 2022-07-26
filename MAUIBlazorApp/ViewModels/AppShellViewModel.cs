@@ -1,4 +1,5 @@
-﻿using MAUIBlazorApp.Views.Startup;
+﻿using MAUIBlazorApp.Helpers;
+using MAUIBlazorApp.Views.Startup;
 using RazorClassLibrary.Services;
 
 namespace MAUIBlazorApp.ViewModels
@@ -9,12 +10,12 @@ namespace MAUIBlazorApp.ViewModels
         [ICommand]
         async void SignOut()
         {
-            if (Preferences.ContainsKey(nameof(LoginService.UserDetails)))
+            var _loginServive = ServiceHelper.GetService<IdentityService>();
+            if (Preferences.ContainsKey(nameof(_loginServive.CurrentUser)))
             {
-                Preferences.Remove(nameof(LoginService.UserDetails));
+                Preferences.Remove(nameof(_loginServive.CurrentUser));
             }
-            LoginService.UserDetails = null;
-            LoginService.Token = null;
+            _loginServive.SignOut();
             await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
         }
     }

@@ -4,12 +4,14 @@ using RazorClassLibrary.Models;
 
 namespace RazorClassLibrary.Services
 {
-    public interface ILoginService
+    public interface IIdentityService
     {
-        static UserDTO UserDetails = new();
-        static string Token = default!;
+        string Token { get; set; }
+        UserDTO CurrentUser { get; set; }
+        string CurrentUserName { get; }
 
         Task<AuthenticateResponse> Authenticate(LoginRequest loginRequest);
+        void SignOut();
         Task<List<UserListResponse>> GetAllUsers();
     }
 }

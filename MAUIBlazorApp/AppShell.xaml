@@ -30,6 +30,18 @@
         </Grid>
     </Shell.FlyoutHeader>
 
+    <FlyoutItem FlyoutItemIsVisible="False">
+        <ShellContent Shell.FlyoutBehavior="Disabled"
+            ContentTemplate="{DataTemplate startupPages:LoadingPage}"
+            Route="LoadingPage" />
+    </FlyoutItem>
+
+    <FlyoutItem FlyoutItemIsVisible="False">
+        <ShellContent Shell.FlyoutBehavior="Disabled" Title="Login Page" 
+            ContentTemplate="{DataTemplate startupPages:LoginPage}"
+            Route="LoginPage" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Blazor" Icon="question.png">
         <ShellContent Title="Blazor"
             ContentTemplate="{DataTemplate view:BlazorPage}"
@@ -40,15 +52,6 @@
         <ShellContent Title="Timesheets"
             ContentTemplate="{DataTemplate view:MainPage}"
             Route="MainPage" />
-    </FlyoutItem>
-
-    <!--<ShellContent FlyoutItemIsVisible="False" Shell.FlyoutBehavior="Disabled"
-        ContentTemplate="{DataTemplate startupPages:LoadingPage}" Route="LoadingPage" />-->
-
-    <FlyoutItem Title="Login" Icon="moon.png">
-        <ShellContent Title="Login Page"
-            ContentTemplate="{DataTemplate startupPages:LoginPage}"
-            Route="LoginPage" />
     </FlyoutItem>
 
     <Shell.FlyoutFooter>

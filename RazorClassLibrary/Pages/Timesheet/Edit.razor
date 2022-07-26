@@ -11,6 +11,7 @@
 @inject IMapper mapper
 @inject NavigationManager navigationManager
 @inject IToastService toastService
+@inject IIdentityService identityService
 @if (Id > 0)
 {
    <h2>Edit Timesheet</h2>
@@ -218,9 +219,10 @@ else
         else
         {
             timesheet = new();
-            if (LoginService.UserDetails?.Id is not null)
+            var (currentEmployee, _) = await entityServices.EmployeeService.GetAllAsync(identityService.CurrentUserName);
+            if ((currentEmployee is not null) && (currentEmployee.Count() > 0))
             {
-                timesheet.EmployeeId = 1;
+                timesheet.EmployeeId = currentEmployee!.FirstOrDefault()!.Id;
             }
             timesheet.TimesheetNumber = await entityServices.TimesheetService.GetNewTimesheetNumber();
             await UpdatePeriodDates();

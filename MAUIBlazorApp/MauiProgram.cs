@@ -43,7 +43,7 @@ public static class MauiProgram
         builder.Services.AddSingleton(Map.Default);
 
         // Services
-        builder.Services.AddSingleton<ILoginService, LoginService>();
+        builder.Services.AddSingleton<IIdentityService, IdentityService>();
         builder.Services.AddSingleton(typeof(IEntityService<,,,>), typeof(EntityService<,,,>));
         builder.Services.AddSingleton<IEntityServices, EntityServices>();
         builder.Services.AddSingleton<ITimesheetLineService, TimesheetLineService>();
@@ -56,6 +56,7 @@ public static class MauiProgram
         builder.Services.AddTransient<DetailsPage>();
 
         // View Models
+        builder.Services.AddSingleton<AppShellViewModel>();
         builder.Services.AddSingleton<LoginPageViewModel>();
         builder.Services.AddSingleton<LoadingPageViewModel>();
         builder.Services.AddSingleton<TimesheetsViewModel>();

@@ -4,7 +4,7 @@ using Microsoft.Maui.Platform;
 namespace MAUIBlazorApp
 {
     public partial class App : Microsoft.Maui.Controls.Application
-    {
+    { 
         public App()
         {
             InitializeComponent();

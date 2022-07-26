@@ -12,11 +12,10 @@ namespace MAUIBlazorApp.ViewModels.Startup
         [ObservableProperty]
         private string _password;
 
-
-        private readonly ILoginService _loginService;
-        public LoginPageViewModel(ILoginService loginService)
+        private readonly IIdentityService _identityService;
+        public LoginPageViewModel(IIdentityService identityService)
         {
-            _loginService = loginService;
+            _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
         }
 
         #region Commands
@@ -26,7 +25,7 @@ namespace MAUIBlazorApp.ViewModels.Startup
             if (!string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password))
             {
                 // calling api 
-                var response = await _loginService.Authenticate(new LoginRequest
+                var response = await _identityService.Authenticate(new LoginRequest
                 {
                     UserName = Email,
                     Password = Password
@@ -42,17 +41,17 @@ namespace MAUIBlazorApp.ViewModels.Startup
                     }
                     //response.UserDetail.Email = Email;
 
-                    if (Preferences.ContainsKey(nameof(LoginService.UserDetails)))
+                    if (Preferences.ContainsKey(nameof(_identityService.CurrentUser)))
                     {
-                        Preferences.Remove(nameof(LoginService.UserDetails));
+                        Preferences.Remove(nameof(_identityService.CurrentUser));
                     }
 
-                    await SecureStorage.SetAsync(nameof(LoginService.Token), response.Token);
+                    await SecureStorage.SetAsync(nameof(IdentityService.Token), response.Token);
 
                     string userDetailStr = JsonConvert.SerializeObject(response.UserDetail);
-                    Preferences.Set(nameof(LoginService.UserDetails), userDetailStr);
-                    LoginService.UserDetails = response.UserDetail;
-                    LoginService.Token = response.Token;
+                    Preferences.Set(nameof(_identityService.CurrentUser), userDetailStr);
+                    _identityService.Token = response.Token;
+                    _identityService.CurrentUser = response.UserDetail;
                     await Shell.Current.GoToAsync($"//{nameof(BlazorPage)}");
 
                 }
