@@ -219,10 +219,13 @@ else
         else
         {
             timesheet = new();
-            var (currentEmployee, _) = await entityServices.EmployeeService.GetAllAsync(identityService.CurrentUserName);
-            if ((currentEmployee is not null) && (currentEmployee.Count() > 0))
+            if (identityService.CurrentUser is not null) // If there is a logged in User, initialize the Employee
             {
-                timesheet.EmployeeId = currentEmployee!.FirstOrDefault()!.Id;
+                var (currentEmployee, _) = await entityServices.EmployeeService.GetAllAsync(identityService.CurrentUserName);
+                if ((currentEmployee is not null) && (currentEmployee.Count() > 0))
+                {
+                    timesheet.EmployeeId = currentEmployee!.FirstOrDefault()!.Id;
+                }
             }
             timesheet.TimesheetNumber = await entityServices.TimesheetService.GetNewTimesheetNumber();
             await UpdatePeriodDates();

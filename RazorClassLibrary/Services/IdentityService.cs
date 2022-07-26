@@ -14,7 +14,7 @@ namespace RazorClassLibrary.Services
         public UserDTO CurrentUser { get; set; } = default!;
         public string CurrentUserName
         {
-            get { return $"{CurrentUser.FirstName} {CurrentUser.LastName}"; }
+            get { return (CurrentUser is not null)?$"{CurrentUser.FirstName} {CurrentUser.LastName}":"Unknown User"; }
         }
 
         private readonly HttpClient httpClient;

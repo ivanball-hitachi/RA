@@ -26,7 +26,7 @@
 
     <Shell.FlyoutHeader>
         <Grid HeightRequest="100" BackgroundColor="DarkSlateBlue">
-            <Image Source="moon.png"/>
+            <Image Source="team.png"/>
         </Grid>
     </Shell.FlyoutHeader>
 

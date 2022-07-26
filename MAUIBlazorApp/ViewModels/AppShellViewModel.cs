@@ -10,12 +10,12 @@ namespace MAUIBlazorApp.ViewModels
         [ICommand]
         async void SignOut()
         {
-            var _loginServive = ServiceHelper.GetService<IdentityService>();
-            if (Preferences.ContainsKey(nameof(_loginServive.CurrentUser)))
+            var _identityService = ServiceHelper.GetService<IIdentityService>();
+            if (Preferences.ContainsKey(nameof(_identityService.CurrentUser)))
             {
-                Preferences.Remove(nameof(_loginServive.CurrentUser));
+                Preferences.Remove(nameof(_identityService.CurrentUser));
             }
-            _loginServive.SignOut();
+            _identityService.SignOut();
             await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
         }
     }

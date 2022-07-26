@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorClassLibrary", "RazorClassLibrary\RazorClassLibrary.csproj", "{B06F864D-691F-4A43-823A-097386458F0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAUIBlazorApp", "MAUIBlazorApp\MAUIBlazorApp.csproj", "{6314FB76-9B25-46BB-A3DF-2BD43514420C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAUIBlazorApp", "MAUIBlazorApp\MAUIBlazorApp.csproj", "{6314FB76-9B25-46BB-A3DF-2BD43514420C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAssemblyApp", "BlazorWebAssemblyApp\BlazorWebAssemblyApp.csproj", "{7FDD404C-05DA-4E6A-8DE9-B796A356ED3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{6314FB76-9B25-46BB-A3DF-2BD43514420C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6314FB76-9B25-46BB-A3DF-2BD43514420C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6314FB76-9B25-46BB-A3DF-2BD43514420C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{7FDD404C-05DA-4E6A-8DE9-B796A356ED3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FDD404C-05DA-4E6A-8DE9-B796A356ED3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FDD404C-05DA-4E6A-8DE9-B796A356ED3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FDD404C-05DA-4E6A-8DE9-B796A356ED3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{C4A75920-EE70-4995-B801-E93864F7AC1A} = {467C1739-66F2-4997-B334-C5F8F4295E5C}
 		{B06F864D-691F-4A43-823A-097386458F0A} = {467C1739-66F2-4997-B334-C5F8F4295E5C}
 		{6314FB76-9B25-46BB-A3DF-2BD43514420C} = {467C1739-66F2-4997-B334-C5F8F4295E5C}
+		{7FDD404C-05DA-4E6A-8DE9-B796A356ED3E} = {467C1739-66F2-4997-B334-C5F8F4295E5C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {245A6038-4F28-4F7D-A8F5-FA6813E194B4}

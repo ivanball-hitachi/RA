@@ -21,7 +21,6 @@ public static class MauiProgram
             });
 
         builder.Services.AddMauiBlazorWebView();
-        builder.Services.AddBlazoredToast();
 
         var appSettingsFileName = typeof(MauiProgram).Namespace;
 
@@ -36,26 +35,27 @@ public static class MauiProgram
         var config = new ConfigurationBuilder().AddJsonStream(stream).Build();
         builder.Configuration.AddConfiguration(config);
 
+        builder.Services.AddBlazoredToast();
         builder.Services.AddAutoMapper(typeof(TimesheetDTOProfile));
 
         builder.Services.AddSingleton(Connectivity.Current);
         builder.Services.AddSingleton(Geolocation.Default);
         builder.Services.AddSingleton(Map.Default);
 
-        // Services
+        // Services Registration
         builder.Services.AddSingleton<IIdentityService, IdentityService>();
         builder.Services.AddSingleton(typeof(IEntityService<,,,>), typeof(EntityService<,,,>));
         builder.Services.AddSingleton<IEntityServices, EntityServices>();
         builder.Services.AddSingleton<ITimesheetLineService, TimesheetLineService>();
 
-        // Views
+        // Views Registration
         builder.Services.AddSingleton<LoginPage>();
         builder.Services.AddSingleton<LoadingPage>();
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<BlazorPage>();
         builder.Services.AddTransient<DetailsPage>();
 
-        // View Models
+        // View Models Registration
         builder.Services.AddSingleton<AppShellViewModel>();
         builder.Services.AddSingleton<LoginPageViewModel>();
         builder.Services.AddSingleton<LoadingPageViewModel>();

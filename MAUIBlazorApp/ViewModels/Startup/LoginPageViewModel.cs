@@ -24,7 +24,6 @@ namespace MAUIBlazorApp.ViewModels.Startup
         {
             if (!string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password))
             {
-                // calling api 
                 var response = await _identityService.Authenticate(new LoginRequest
                 {
                     UserName = Email,
@@ -35,11 +34,9 @@ namespace MAUIBlazorApp.ViewModels.Startup
                 {
                     if (response.UserDetail.Role is null)
                     {
-                        await AppShell.Current.DisplayAlert("No Role Assigned", 
-                            "No role assigned to this user.", "OK");
+                        await AppShell.Current.DisplayAlert("No Role Assigned", "No role assigned to this user.", "OK");
                         return;
                     }
-                    //response.UserDetail.Email = Email;
 
                     if (Preferences.ContainsKey(nameof(_identityService.CurrentUser)))
                     {
@@ -53,12 +50,15 @@ namespace MAUIBlazorApp.ViewModels.Startup
                     _identityService.Token = response.Token;
                     _identityService.CurrentUser = response.UserDetail;
                     await Shell.Current.GoToAsync($"//{nameof(BlazorPage)}");
-
                 }
                 else
                 {
                     await AppShell.Current.DisplayAlert("Invalid User Name Or Password", "Invalid UserName or Password", "OK");
                 }
+            }
+            else
+            {
+                await AppShell.Current.DisplayAlert("User Name And Password Required", "UserName and Password are required", "OK");
             }
         }
         #endregion
