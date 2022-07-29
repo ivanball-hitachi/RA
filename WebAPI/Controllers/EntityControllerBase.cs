@@ -9,9 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.Controllers
 {
-#if BLAZORUI
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-#endif
     public class EntityControllerBase<TEntity, TEntityDTO, TEntityForCreationDTO, TEntityForUpdateDTO, TIdentifier> : ControllerBase, IEntityControllerBase<TEntity, TEntityDTO, TEntityForCreationDTO, TEntityForUpdateDTO, TIdentifier>
         where TEntity : IBaseEntity<TIdentifier>, IAuditableEntity
         where TEntityDTO : AuditableDTO, IBaseEntity<TIdentifier>

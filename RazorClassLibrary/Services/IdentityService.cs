@@ -20,24 +20,15 @@ namespace RazorClassLibrary.Services
 
         private readonly HttpClient httpClient;
 
-#if BLAZORUI
         private IAccessTokenProvider _tokenProvider = default!;
 
-        public IdentityService(IConfiguration configuration, IAccessTokenProvider tokenProvider)
+        public IdentityService(IConfiguration configuration, IAccessTokenProvider tokenProvider = default!)
         {
-            _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
+            _tokenProvider = tokenProvider;
             httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri(configuration["APIBaseURL"]);
             httpClient.Timeout = new TimeSpan(0, 0, 30);
         }
-#else
-        public IdentityService(IConfiguration configuration)
-        {
-            httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(configuration["APIBaseURL"]);
-            httpClient.Timeout = new TimeSpan(0, 0, 30);
-        }
-#endif
 
         public async Task<AuthenticateResponse> Authenticate(LoginRequest loginRequest)
         {
@@ -70,8 +61,7 @@ namespace RazorClassLibrary.Services
 
         public async Task<string> GetToken()
         {
-#if BLAZORUI
-            if (Token is null)
+            if ((Token is null) && (_tokenProvider is not null))
             {
                 var tokenResult = await _tokenProvider.RequestAccessToken();
                 if (tokenResult.TryGetToken(out var token))
@@ -79,7 +69,6 @@ namespace RazorClassLibrary.Services
                     Token = token.Value;
                 }
             }
-#endif
             return Token!;
         }
 

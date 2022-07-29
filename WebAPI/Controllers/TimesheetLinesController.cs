@@ -5,11 +5,14 @@ using Domain.Timesheets.DTO;
 using System.Text.Json;
 using Application.Common.Interface;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/timesheets/{timesheetId}/timesheetlines")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TimesheetLinesController : ControllerBase
     {
         private readonly ITimesheetService _entityService;
