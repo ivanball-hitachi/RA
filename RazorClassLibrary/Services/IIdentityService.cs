@@ -11,6 +11,7 @@ namespace RazorClassLibrary.Services
         string CurrentUserName { get; }
 
         Task<AuthenticateResponse> Authenticate(LoginRequest loginRequest);
+        Task<bool> RegisterUser(RegisterUserDTO userDetails);
         void SignOut();
         Task<string> GetToken();
         Task<List<UserListResponse>> GetAllUsers();

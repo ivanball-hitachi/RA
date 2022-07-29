@@ -50,6 +50,7 @@ public static class MauiProgram
         // Views Registration
         builder.Services.AddSingleton<LoginPage>();
         builder.Services.AddSingleton<LoadingPage>();
+        builder.Services.AddSingleton<RegisterPage>();
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<BlazorPage>();
         builder.Services.AddTransient<DetailsPage>();
@@ -58,6 +59,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppShellViewModel>();
         builder.Services.AddSingleton<LoginPageViewModel>();
         builder.Services.AddSingleton<LoadingPageViewModel>();
+        builder.Services.AddSingleton<RegisterPageViewModel>();
         builder.Services.AddSingleton<TimesheetsViewModel>();
         builder.Services.AddTransient<TimesheetDetailsViewModel>();
 

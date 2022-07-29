@@ -38,8 +38,8 @@
         <Button Text="Sign In" WidthRequest="100" CornerRadius="20" HorizontalOptions="Center" Command="{Binding LoginCommand}" />
 
         <StackLayout Orientation="Horizontal" Spacing="5" HorizontalOptions="Center">
-            <Label Text="Don't have account?" TextColor="Gray" />
-            <Label Text="Sign Up here" TextColor="#50b3f2" />
+            <Label Text="Don't have account?" TextColor="Gray" VerticalOptions="Center" />
+            <Button Text="Sign Up here" CornerRadius="20" VerticalOptions="Center" Command="{Binding RegisterUserCommand}"/>
         </StackLayout>
     </VerticalStackLayout>
 </ContentPage>

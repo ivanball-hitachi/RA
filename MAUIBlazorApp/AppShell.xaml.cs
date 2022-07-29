@@ -10,6 +10,7 @@ public partial class AppShell : Shell
         BindingContext = new AppShellViewModel();
 
         Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+        Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
         Routing.RegisterRoute(nameof(BlazorPage), typeof(BlazorPage));
         Routing.RegisterRoute(nameof(DetailsPage), typeof(DetailsPage));
 	}

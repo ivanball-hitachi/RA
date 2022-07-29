@@ -53,6 +53,16 @@ namespace RazorClassLibrary.Services
             return null!;
         }
 
+        public async Task<bool> RegisterUser(RegisterUserDTO userDetails)
+        {
+            string registerUserRequestStr = JsonConvert.SerializeObject(userDetails);
+
+            var response = await httpClient.PostAsync($"api/user/RegisterUser",
+                    new StringContent(registerUserRequestStr, Encoding.UTF8, "application/json"));
+
+            return (response.StatusCode == System.Net.HttpStatusCode.OK);
+        }
+
         public void SignOut()
         {
             CurrentUser = default!;

@@ -1,6 +1,6 @@
-﻿namespace Infrastructure.Persistence.IdentityModels
+﻿namespace Domain.Main.DTO
 {
-    public class RegisterUserRequest
+    public class RegisterUserDTO
     {
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;

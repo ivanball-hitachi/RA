@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("RegisterUser")]
-        public async Task<IActionResult> RegisterUser(RegisterUserRequest userDetails)
+        public async Task<IActionResult> RegisterUser(RegisterUserDTO userDetails)
         {
             if (ModelState.IsValid)
             {

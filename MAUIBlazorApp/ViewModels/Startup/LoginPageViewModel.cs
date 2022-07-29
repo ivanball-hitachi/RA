@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using MAUIBlazorApp.Views.Startup;
 using RazorClassLibrary.Models;
 using RazorClassLibrary.Services;
 
@@ -32,11 +33,11 @@ namespace MAUIBlazorApp.ViewModels.Startup
 
                 if(response is not null)
                 {
-                    if (response.UserDetail.Role is null)
-                    {
-                        await AppShell.Current.DisplayAlert("No Role Assigned", "No role assigned to this user.", "OK");
-                        return;
-                    }
+                    //if (response.UserDetail.Role is null)
+                    //{
+                    //    await AppShell.Current.DisplayAlert("No Role Assigned", "No role assigned to this user.", "OK");
+                    //    return;
+                    //}
 
                     if (Preferences.ContainsKey(nameof(_identityService.CurrentUser)))
                     {
@@ -60,6 +61,12 @@ namespace MAUIBlazorApp.ViewModels.Startup
             {
                 await AppShell.Current.DisplayAlert("User Name And Password Required", "UserName and Password are required", "OK");
             }
+        }
+
+        [ICommand]
+        async void RegisterUser()
+        {
+            await Shell.Current.GoToAsync($"{nameof(RegisterPage)}");
         }
         #endregion
     }
