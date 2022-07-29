@@ -1,5 +1,6 @@
 ﻿using Domain.Main;
 using Domain.Main.DTO;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RazorClassLibrary.Models;
@@ -18,13 +19,25 @@ namespace RazorClassLibrary.Services
         }
 
         private readonly HttpClient httpClient;
-        
+
+#if BLAZORUI
+        private IAccessTokenProvider _tokenProvider = default!;
+
+        public IdentityService(IConfiguration configuration, IAccessTokenProvider tokenProvider)
+        {
+            _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
+            httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(configuration["APIBaseURL"]);
+            httpClient.Timeout = new TimeSpan(0, 0, 30);
+        }
+#else
         public IdentityService(IConfiguration configuration)
         {
             httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri(configuration["APIBaseURL"]);
             httpClient.Timeout = new TimeSpan(0, 0, 30);
         }
+#endif
 
         public async Task<AuthenticateResponse> Authenticate(LoginRequest loginRequest)
         {
@@ -53,6 +66,21 @@ namespace RazorClassLibrary.Services
         {
             CurrentUser = default!;
             Token = default!;
+        }
+
+        public async Task<string> GetToken()
+        {
+#if BLAZORUI
+            if (Token is null)
+            {
+                var tokenResult = await _tokenProvider.RequestAccessToken();
+                if (tokenResult.TryGetToken(out var token))
+                {
+                    Token = token.Value;
+                }
+            }
+#endif
+            return Token!;
         }
 
         public async Task<List<UserListResponse>> GetAllUsers()

@@ -46,7 +46,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<IIdentityService, IdentityService>();
         builder.Services.AddSingleton(typeof(IEntityService<,,,>), typeof(EntityService<,,,>));
         builder.Services.AddSingleton<IEntityServices, EntityServices>();
-        builder.Services.AddSingleton<ITimesheetLineService, TimesheetLineService>();
 
         // Views Registration
         builder.Services.AddSingleton<LoginPage>();

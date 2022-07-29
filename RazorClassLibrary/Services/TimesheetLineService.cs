@@ -9,59 +9,87 @@ namespace RazorClassLibrary.Services;
 
 public class TimesheetLineService : ITimesheetLineService
 {
-    HttpClient httpClient;
-    public TimesheetLineService(IConfiguration configuration)
+    protected readonly string _baseAddress;
+    private readonly string _addressSuffix;
+    private readonly IIdentityService _identityService;
+
+    public TimesheetLineService(string baseAddress, string addressSuffix, IIdentityService identityService)
     {
-        httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(configuration["APIBaseURL"]);
+        _baseAddress = baseAddress;
+        _addressSuffix = addressSuffix;
+        _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+    }
+
+    protected async Task<HttpClient> CreateHttpClient(string serviceBaseAddress)
+    {
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(serviceBaseAddress);
         httpClient.Timeout = new TimeSpan(0, 0, 30);
+        string token = await _identityService.GetToken();
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        return httpClient;
     }
 
     public async Task<(List<TimesheetLineDTO>?, PaginationMetadata?)> GetTimesheetLinesAsync(int timesheetId, string? searchValue = default, int pageNumber = 1, int pageSize = 10)
     {
-        var response = await httpClient.GetAsync($"api/timesheets/{timesheetId}/timesheetlines/paged?searchValue={searchValue}&pageNumber={pageNumber}&pageSize={pageSize}");
-        if (response.IsSuccessStatusCode)
+        using (var httpClient = await CreateHttpClient(_baseAddress))
         {
-            var collectionToReturn = await response.Content.ReadFromJsonAsync<List<TimesheetLineDTO>>();
-            PaginationMetadata? paginationMetadata = default;
-            if (response.Headers.Contains("X-Pagination"))
+            var response = await httpClient.GetAsync($"api/timesheets/{timesheetId}/timesheetlines/paged?searchValue={searchValue}&pageNumber={pageNumber}&pageSize={pageSize}");
+            if (response.IsSuccessStatusCode)
             {
-                paginationMetadata = JsonSerializer.Deserialize<PaginationMetadata>(response.Headers.GetValues("X-Pagination").First());
+                var collectionToReturn = await response.Content.ReadFromJsonAsync<List<TimesheetLineDTO>>();
+                PaginationMetadata? paginationMetadata = default;
+                if (response.Headers.Contains("X-Pagination"))
+                {
+                    paginationMetadata = JsonSerializer.Deserialize<PaginationMetadata>(response.Headers.GetValues("X-Pagination").First());
+                }
+                return (collectionToReturn, paginationMetadata);
             }
-            return (collectionToReturn, paginationMetadata);
+            else return (null, null);
         }
-        else return (null, null);
     }
 
     public async Task<TimesheetLineDTO?> GetTimesheetLineByIdAsync(int timesheetId, int timesheetLineId, string? searchValueForTimesheetLineDetails = default)
     {
-        TimesheetLineDTO? timesheetLine = null;
-        var response = await httpClient.GetAsync($"api/timesheets/{timesheetId}/timesheetlines/{timesheetLineId}?searchValue={searchValueForTimesheetLineDetails}");
-        if (response.IsSuccessStatusCode)
+        using (var httpClient = await CreateHttpClient(_baseAddress))
         {
-            timesheetLine = await response.Content.ReadFromJsonAsync<TimesheetLineDTO>();
+            TimesheetLineDTO? timesheetLine = null;
+            var response = await httpClient.GetAsync($"api/timesheets/{timesheetId}/timesheetlines/{timesheetLineId}?searchValue={searchValueForTimesheetLineDetails}");
+            if (response.IsSuccessStatusCode)
+            {
+                timesheetLine = await response.Content.ReadFromJsonAsync<TimesheetLineDTO>();
+            }
+            return timesheetLine;
         }
-        return timesheetLine;
     }
 
     public async Task<bool> AddTimesheetLineAsync(int timesheetId, TimesheetLineForCreationDTO timesheetLine)
     {
-        HttpResponseMessage response = await httpClient.PostAsJsonAsync(
-            $"api/timesheets/{timesheetId}/timesheetlines", timesheetLine);
-        return response.IsSuccessStatusCode;
+        using (var httpClient = await CreateHttpClient(_baseAddress))
+        {
+            HttpResponseMessage response = await httpClient.PostAsJsonAsync(
+                $"api/timesheets/{timesheetId}/timesheetlines", timesheetLine);
+            return response.IsSuccessStatusCode;
+        }
     }
 
     public async Task<bool> UpdateTimesheetLineAsync(int timesheetId, TimesheetLineForUpdateDTO timesheetLine)
     {
-        HttpResponseMessage response = await httpClient.PutAsJsonAsync(
-            $"api/timesheets/{timesheetId}/timesheetlines/{timesheetLine.Id}", timesheetLine);
-        return response.IsSuccessStatusCode;
+        using (var httpClient = await CreateHttpClient(_baseAddress))
+        {
+            HttpResponseMessage response = await httpClient.PutAsJsonAsync(
+                $"api/timesheets/{timesheetId}/timesheetlines/{timesheetLine.Id}", timesheetLine);
+            return response.IsSuccessStatusCode;
+        }
     }
 
     public async Task<bool> DeleteTimesheetLineAsync(int timesheetId, int timesheetLineId)
     {
-        HttpResponseMessage response = await httpClient.DeleteAsync(
-            $"api/timesheets/{timesheetId}/timesheetlines/{timesheetLineId}");
-        return response.IsSuccessStatusCode;
+        using (var httpClient = await CreateHttpClient(_baseAddress))
+        {
+            HttpResponseMessage response = await httpClient.DeleteAsync(
+                $"api/timesheets/{timesheetId}/timesheetlines/{timesheetLineId}");
+            return response.IsSuccessStatusCode;
+        }
     }
 }

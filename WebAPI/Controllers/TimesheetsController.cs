@@ -3,11 +3,16 @@ using Domain.Timesheets;
 using AutoMapper;
 using Domain.Timesheets.DTO;
 using Application.Common.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/timesheets")]
+#if BLAZORUI
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+#endif
     public class TimesheetsController : EntityControllerBase<Timesheet, TimesheetDTO, TimesheetForCreationDTO, TimesheetForUpdateDTO, int>
     {
         protected readonly new ITimesheetService _entityService;

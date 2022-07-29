@@ -43,7 +43,7 @@
     </FlyoutItem>
 
     <FlyoutItem Title="Blazor" Icon="question.png">
-        <ShellContent Title="Blazor"
+        <ShellContent Title=""
             ContentTemplate="{DataTemplate view:BlazorPage}"
             Route="BlazorPage" />
     </FlyoutItem>

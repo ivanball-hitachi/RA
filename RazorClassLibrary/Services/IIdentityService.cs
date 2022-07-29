@@ -12,6 +12,7 @@ namespace RazorClassLibrary.Services
 
         Task<AuthenticateResponse> Authenticate(LoginRequest loginRequest);
         void SignOut();
+        Task<string> GetToken();
         Task<List<UserListResponse>> GetAllUsers();
     }
 }

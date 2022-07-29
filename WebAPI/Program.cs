@@ -35,25 +35,26 @@ builder.Services.AddCors(options =>
 
 builder.Host.UseSerilog();
 
-// Add services to the container.
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-builder.Services.AddAuthentication(f =>
+}).AddJwtBearer(options =>
 {
-    f.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    f.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(k =>
-{
+    options.Authority = builder.Configuration["JWT:Authority"];
     var Key = Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]);
-    k.SaveToken = true;
-    k.IncludeErrorDetails = true;
-    k.TokenValidationParameters = new TokenValidationParameters
+    options.SaveToken = true;
+    options.IncludeErrorDetails = true;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidateAudience = true,
+        ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["JWT:Issuer"],
         ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidTypes = new[] { "at+jwt" },
         IssuerSigningKey = new SymmetricSecurityKey(Key),
         ClockSkew = TimeSpan.Zero
     };
@@ -80,11 +81,11 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 app.UseHttpsRedirection();
 

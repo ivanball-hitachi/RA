@@ -2,7 +2,7 @@
 
 namespace RazorClassLibrary.Services
 {
-    public interface IEntityService<TEntityDTO, TEntityForCreationDTO, TEntityForUpdateDTO, TIdentifier> : IDisposable
+    public interface IEntityService<TEntityDTO, TEntityForCreationDTO, TEntityForUpdateDTO, TIdentifier>
         where TEntityDTO : AuditableDTO, IBaseEntity<TIdentifier>
         where TEntityForCreationDTO : AuditableDTO
         where TEntityForUpdateDTO : AuditableDTO, IBaseEntity<TIdentifier>

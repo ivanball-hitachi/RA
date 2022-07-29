@@ -1,12 +1,12 @@
 ﻿@page "/add_timesheet"
 @page "/update_timesheet/{Id:int}"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
 @using Domain.Common
 @using Domain.Main.DTO
 @using Domain.Timesheets.DTO
 @using RazorClassLibrary.Services
 @using AutoMapper
-@inject ITimesheetLineService timesheetLineService
 @inject IEntityServices entityServices
 @inject IMapper mapper
 @inject NavigationManager navigationManager
@@ -211,7 +211,7 @@ else
             if (response is not null)
             {
                 timesheet = mapper.Map<TimesheetDTO>(response);
-                (timesheetLines, paginationMetadata) = await timesheetLineService
+                (timesheetLines, paginationMetadata) = await entityServices.TimesheetLineService
                     .GetTimesheetLinesAsync(Id, searchValue, currentPage, 10);
                 StateHasChanged();
             }
@@ -263,7 +263,7 @@ else
 
     private async void DeleteTimesheetLine(int timesheetId, int timesheetLineId)
     {
-        var success = await timesheetLineService.DeleteTimesheetLineAsync(timesheetId, timesheetLineId);
+        var success = await entityServices.TimesheetLineService.DeleteTimesheetLineAsync(timesheetId, timesheetLineId);
         if (success)
         {
             await RefreshPageAsync();

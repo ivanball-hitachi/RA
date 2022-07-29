@@ -1,12 +1,12 @@
 ﻿@page "/add_timesheetline/{TimesheetId:int}"
 @page "/update_timesheetline/{TimesheetId:int}/{Id:int}"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
 @using Domain.Common
 @using Domain.Main.DTO
 @using Domain.Timesheets.DTO
 @using RazorClassLibrary.Services
 @using AutoMapper
-@inject ITimesheetLineService timesheetLineService
 @inject IEntityServices entityServices
 @inject IMapper mapper
 @inject NavigationManager navigationManager
@@ -173,7 +173,7 @@ else
 
         if (Id > 0)
         {
-            var response = await timesheetLineService.GetTimesheetLineByIdAsync(TimesheetId, Id);
+            var response = await entityServices.TimesheetLineService.GetTimesheetLineByIdAsync(TimesheetId, Id);
             if (response is not null)
             {
                 timesheetLine = mapper.Map<TimesheetLineDTO>(response);
@@ -208,12 +208,12 @@ else
         if (Id > 0)
         {
             var timesheetLineForUpdate = mapper.Map<TimesheetLineForUpdateDTO>(timesheetLine);
-            success = await timesheetLineService.UpdateTimesheetLineAsync(TimesheetId, timesheetLineForUpdate);
+            success = await entityServices.TimesheetLineService.UpdateTimesheetLineAsync(TimesheetId, timesheetLineForUpdate);
         }
         else
         {
             var timesheetLineForCreation = mapper.Map<TimesheetLineForCreationDTO>(timesheetLine);
-            success = await timesheetLineService.AddTimesheetLineAsync(TimesheetId, timesheetLineForCreation);
+            success = await entityServices.TimesheetLineService.AddTimesheetLineAsync(TimesheetId, timesheetLineForCreation);
         }
 
         if (success)

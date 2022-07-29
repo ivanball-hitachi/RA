@@ -16,5 +16,6 @@ namespace RazorClassLibrary.Services
         IEntityService<LocationDTO, LocationForCreationDTO, LocationForUpdateDTO, int> LocationService { get; }
         IEntityService<ProjectDTO, ProjectForCreationDTO, ProjectForUpdateDTO, int> ProjectService { get; }
         ITimesheetService TimesheetService { get; }
+        ITimesheetLineService TimesheetLineService { get; }
     }
 }
