@@ -17,6 +17,7 @@ namespace Infrastructure.Persistence
         private IRepository<Category, int>? _categoryRepository;
         private IRepository<Customer, int>? _customerRepository;
         private IRepository<Employee, int>? _employeeRepository;
+        private IRepository<Employee_Reviewer, int>? _employee_ReviewerRepository;
         private IRepository<EmployeeType, int>? _employeeTypeRepository;
         private IRepository<LegalEntity, int>? _legalEntityRepository;
         private IRepository<LineProperty, int>? _linePropertyRepository;
@@ -82,6 +83,16 @@ namespace Infrastructure.Persistence
                 if (_employeeRepository is null)
                     _employeeRepository = new EFRepository<Employee, int>(_context);
                 return _employeeRepository;
+            }
+        }
+
+        public IRepository<Employee_Reviewer, int> Employee_ReviewerRepository
+        {
+            get
+            {
+                if (_employee_ReviewerRepository is null)
+                    _employee_ReviewerRepository = new EFRepository<Employee_Reviewer, int>(_context);
+                return _employee_ReviewerRepository;
             }
         }
 

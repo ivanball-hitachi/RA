@@ -10,6 +10,8 @@ public class Employee : AuditableWithBaseEntity<int>
     public EmployeeType? EmployeeType { get; set; }
     public int EmployeeTypeId { get; set; }
 
+    public string? UserId { get; set; } = default;
+
     public string FullName
     {
         get { return $"{FirstName} {LastName}"; }

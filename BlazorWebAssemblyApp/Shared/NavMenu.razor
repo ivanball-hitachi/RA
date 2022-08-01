@@ -1,4 +1,5 @@
-﻿@using RazorClassLibrary.Services
+﻿@using Domain.Common
+@using RazorClassLibrary.Services
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
@@ -22,24 +23,26 @@
 	<nav class="flex-column">
 		<AuthorizeView>
 			<Authorized>
-				<div class="nav-item px-3">
+@*				<div class="nav-item px-3">
+					<ul>
+						@foreach (var claim in context.User.Claims)
+						{
+							<li><b>@claim.Type</b>: @claim.Value</li>
+						}
+					</ul>
+				</div>
+*@				<div class="nav-item px-3">
 					<NavLink class="nav-link" href="timesheets">
 						<span class="oi oi-list-rich" aria-hidden="true"></span> Timesheets
 					</NavLink>
-					<div class="nav-item px-3">
-						<button class="list-group-item list-group-item-action bg-light"
-								@onclick="BeginSignOut">
-							<span class="oi oi-list-rich" aria-hidden="true"></span> Log out <br/>
-							(@context.User.Identity!.Name)
-						</button>
-					</div>
-@*					<div class="nav-item px-3">
-						<button class="list-group-item list-group-item-action bg-light"
-								@onclick="WriteToken">
-							<span class="oi oi-list-rich" aria-hidden="true"></span> Write token
-						</button>
-					</div>
-*@				</div>
+				</div>
+				<div class="nav-item px-3">
+					<button class="list-group-item list-group-item-action bg-light"
+							@onclick="BeginSignOut">
+						<span class="oi oi-list-rich" aria-hidden="true"></span> Log out <br/>
+						(@context.User.Identity!.Name)
+					</button>
+				</div>
 			</Authorized>
 			<NotAuthorized>
 				<div class="nav-item px-3">
@@ -65,6 +68,13 @@
 					</NavLink>
 				</div>
 			</NotAuthorized>
+		</AuthorizeView>
+        <AuthorizeView Policy="@Policies.CanReviewTimesheets">
+			<div class="nav-item px-3">
+				<NavLink class="nav-link" href="review_timesheets">
+					<span class="oi oi-list-rich" aria-hidden="true"></span> Review Timesheets
+				</NavLink>
+			</div>
 		</AuthorizeView>
 	</nav>
 </div>

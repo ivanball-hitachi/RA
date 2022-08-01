@@ -145,8 +145,8 @@ namespace WebAPI.Controllers
                     case "individualcontributor":
                         roleID = (int)RoleDetails.IndividualContributor;
                         break;
-                    case "manager":
-                        roleID = (int)RoleDetails.Manager;
+                    case "reviewer":
+                        roleID = (int)RoleDetails.Reviewer;
                         break;
                     case "admin":
                         roleID = (int)RoleDetails.Admin;
@@ -166,6 +166,7 @@ namespace WebAPI.Controllers
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id),
                     new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Role, "reviewer"),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 

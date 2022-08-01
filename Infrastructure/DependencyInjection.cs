@@ -54,6 +54,10 @@ namespace Infrastructure
             services.AddScoped<IValidator<EmployeeForCreationDTO>, EmployeeDTOValidator>();
             services.AddScoped<IValidator<EmployeeForUpdateDTO>, EmployeeDTOValidator>();
 
+            services.AddScoped<IValidator<Employee_ReviewerDTO>, Employee_ReviewerDTOValidator>();
+            services.AddScoped<IValidator<Employee_ReviewerForCreationDTO>, Employee_ReviewerDTOValidator>();
+            services.AddScoped<IValidator<Employee_ReviewerForUpdateDTO>, Employee_ReviewerDTOValidator>();
+
             services.AddScoped<IValidator<EmployeeTypeDTO>, EmployeeTypeDTOValidator>();
             services.AddScoped<IValidator<EmployeeTypeForCreationDTO>, EmployeeTypeDTOValidator>();
             services.AddScoped<IValidator<EmployeeTypeForUpdateDTO>, EmployeeTypeDTOValidator>();

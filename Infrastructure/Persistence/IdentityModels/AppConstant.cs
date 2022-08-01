@@ -8,7 +8,7 @@
     public enum RoleDetails
     {
         IndividualContributor = 1,
-        Manager,
+        Reviewer,
         Admin,
     }
 }

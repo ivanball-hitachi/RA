@@ -5,6 +5,7 @@ using IdentityServer4.EntityFramework.Storage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
+using Server.Models;
 using System.Security.Claims;
 
 namespace Server
@@ -20,7 +21,7 @@ namespace Server
             );
 
             services
-                .AddIdentity<IdentityUser, IdentityRole>()
+                .AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AspNetIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -62,15 +63,16 @@ namespace Server
 
         private static void EnsureUsers(IServiceScope scope)
         {
-            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var ivan = userMgr.FindByNameAsync("ivan").Result;
+            var ivan = userMgr.FindByEmailAsync("iballllovera@hitachisolutions.com").Result;
             if (ivan is null)
             {
-                ivan = new IdentityUser
+                ivan = new ApplicationUser
                 {
-                    UserName = "ivan",
+                    UserName = "iballllovera@hitachisolutions.com",
                     Email = "iballllovera@hitachisolutions.com",
+                    CustomClaim = "AdminClaim",
                     EmailConfirmed = true
                 };
                 var result = userMgr.CreateAsync(ivan, "Pass123$").Result;
@@ -88,7 +90,44 @@ namespace Server
                             new Claim(JwtClaimTypes.GivenName, "Ivan"),
                             new Claim(JwtClaimTypes.FamilyName, "Ball-llovera"),
                             new Claim(JwtClaimTypes.WebSite, "http://ivanball.com"),
-                            new Claim("location", "somewhere")
+                            new Claim("location", "somewhere"),
+                            //new Claim(JwtClaimTypes.Role, "reviewer"),
+                            new Claim(JwtClaimTypes.Role, "admin")
+                        }
+                    ).Result;
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.First().Description);
+                }
+            }
+
+            var ursula = userMgr.FindByEmailAsync("uconley@hitachisolutions.com").Result;
+            if (ursula is null)
+            {
+                ursula = new ApplicationUser
+                {
+                    UserName = "uconley@hitachisolutions.com",
+                    Email = "uconley@hitachisolutions.com",
+                    CustomClaim = "ReviewerClaim",
+                    EmailConfirmed = true
+                };
+                var result = userMgr.CreateAsync(ursula, "Pass123$").Result;
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.First().Description);
+                }
+
+                result =
+                    userMgr.AddClaimsAsync(
+                        ursula,
+                        new Claim[]
+                        {
+                            new Claim(JwtClaimTypes.Name, "Ursula Conley"),
+                            new Claim(JwtClaimTypes.GivenName, "Ursula"),
+                            new Claim(JwtClaimTypes.FamilyName, "Conley"),
+                            new Claim(JwtClaimTypes.WebSite, "http://ursulaconley.com"),
+                            new Claim("location", "somewhere"),
+                            new Claim(JwtClaimTypes.Role, "reviewer")
                         }
                     ).Result;
                 if (!result.Succeeded)

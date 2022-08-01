@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Timesheets.DTO;
 
 namespace Domain.Main.DTO
 {
@@ -7,6 +8,7 @@ namespace Domain.Main.DTO
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
         public int EmployeeTypeId { get; set; } = default;
+        public string? UserId { get; set; } = default;
     }
 
     public class EmployeeDTO : EmployeeBaseDTO, IBaseEntity<int>

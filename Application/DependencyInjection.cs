@@ -16,6 +16,7 @@ namespace Application
             services.AddScoped<IEntityService<Category>, CategoryService>();
             services.AddScoped<IEntityService<Customer>, CustomerService>();
             services.AddScoped<IEntityService<Employee>, EmployeeService>();
+            services.AddScoped<IEntityService<Employee_Reviewer>, Employee_ReviewerService>();
             services.AddScoped<IEntityService<EmployeeType>, EmployeeTypeService>();
             services.AddScoped<IEntityService<LegalEntity>, LegalEntityService>();
             services.AddScoped<IEntityService<LineProperty>, LinePropertyService>();

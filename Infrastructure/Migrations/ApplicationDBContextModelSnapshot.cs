@@ -152,6 +152,15 @@ namespace Infrastructure.Migrations
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = 0,
+                            Name = "In review"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            LastModifiedBy = 0,
                             Name = "Posted"
                         });
                 });
@@ -348,6 +357,9 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeTypeId");
@@ -372,10 +384,68 @@ namespace Infrastructure.Migrations
                             CreatedBy = 0,
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmployeeTypeId = 1,
-                            FirstName = "Arun",
+                            FirstName = "Ursula",
                             IsDeleted = false,
                             LastModifiedBy = 0,
-                            LastName = "Pandey"
+                            LastName = "Conley"
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Main.Employee_Reviewer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ReviewerId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("ReviewerId");
+
+                    b.ToTable("Employee_Reviewer", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EmployeeId = 1,
+                            IsDeleted = false,
+                            LastModifiedBy = 0,
+                            ReviewerId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EmployeeId = 2,
+                            IsDeleted = false,
+                            LastModifiedBy = 0,
+                            ReviewerId = 2
                         });
                 });
 
@@ -928,6 +998,25 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("EmployeeType");
+                });
+
+            modelBuilder.Entity("Domain.Main.Employee_Reviewer", b =>
+                {
+                    b.HasOne("Domain.Main.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Main.Employee", "Reviewer")
+                        .WithMany()
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Reviewer");
                 });
 
             modelBuilder.Entity("Domain.Timesheets.Timesheet", b =>

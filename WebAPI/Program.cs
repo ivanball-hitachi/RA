@@ -1,4 +1,5 @@
 using Application;
+using Domain.Common;
 using FluentValidation.AspNetCore;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -58,6 +59,13 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Key),
         ClockSkew = TimeSpan.Zero
     };
+});
+
+builder.Services.AddAuthorization(authorizationOptions =>
+{
+    authorizationOptions.AddPolicy(
+        Policies.CanReviewTimesheets,
+        Policies.CanReviewTimesheetsPolicy());
 });
 
 builder.Services.AddControllers(options =>

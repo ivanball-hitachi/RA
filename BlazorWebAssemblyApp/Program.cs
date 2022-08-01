@@ -1,5 +1,7 @@
 using Blazored.Toast;
+using BlazorWebAssemblyApp;
 using BlazorWebAssemblyApp.Shared;
+using Domain.Common;
 using Infrastructure.Persistence.Configuration.Timesheets;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -15,6 +17,13 @@ builder.Services.AddOidcAuthentication(options =>
     builder.Configuration.Bind("UserOptions", options.UserOptions);
 });
 
+builder.Services.AddAuthorizationCore(options =>
+{
+    options.AddPolicy(
+        Policies.CanReviewTimesheets,
+        Policies.CanReviewTimesheetsPolicy());
+});
+
 builder.Services.AddBlazoredToast();
 builder.Services.AddAutoMapper(typeof(TimesheetDTOProfile));
 
@@ -23,7 +32,9 @@ builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped(typeof(IEntityService<,,,>), typeof(EntityService<,,,>));
 builder.Services.AddScoped<IEntityServices, EntityServices>();
 
-builder.Services.AddOptions();
-builder.Services.AddAuthorizationCore();
+/*
+builder.Services.AddApiAuthorization()
+    .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
+*/
 
 await builder.Build().RunAsync();

@@ -66,9 +66,17 @@ namespace WebAPI.Controllers
         [HttpPost]
         public override async Task<ActionResult<TimesheetDTO>> Create(TimesheetForCreationDTO entityDTO, string action = default!)
         {
-            if (action == "Submit")
+            switch (action)
             {
-                entityDTO.ApprovalStatusId = 2;     // TODO: Get ApprovalStatusId corresponding to "Posted"
+                case "Submit":
+                        entityDTO.ApprovalStatusId = 2;     // TODO: Get ApprovalStatusId corresponding to "In review"
+                        break;
+                case "Approve":
+                        entityDTO.ApprovalStatusId = 3;     // TODO: Get ApprovalStatusId corresponding to "Approved"
+                        break;
+                case "Reject":
+                        entityDTO.ApprovalStatusId = 4;     // TODO: Get ApprovalStatusId corresponding to "Rejected"
+                        break;
             }
 
             return await base.Create(entityDTO);
@@ -77,9 +85,17 @@ namespace WebAPI.Controllers
         [HttpPut("{id}")]
         public override async Task<ActionResult> Update(int id, TimesheetForUpdateDTO entityDTO, string action = default!)
         {
-            if (action == "Submit")
+            switch (action)
             {
-                entityDTO.ApprovalStatusId = 2;     // TODO: Get ApprovalStatusId corresponding to "Posted"
+                case "Submit":
+                    entityDTO.ApprovalStatusId = 2;     // TODO: Get ApprovalStatusId corresponding to "In review"
+                    break;
+                case "Approve":
+                    entityDTO.ApprovalStatusId = 3;     // TODO: Get ApprovalStatusId corresponding to "Approved"
+                    break;
+                case "Reject":
+                    entityDTO.ApprovalStatusId = 4;     // TODO: Get ApprovalStatusId corresponding to "Rejected"
+                    break;
             }
 
             return await base.Update(id, entityDTO);

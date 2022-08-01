@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using MAUIBlazorApp.Views.Startup;
 using MAUIBlazorApp.ViewModels.Startup;
+using Domain.Common;
 
 namespace MAUIBlazorApp;
 
@@ -34,6 +35,13 @@ public static class MauiProgram
         var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(appSettingsFileName);
         var config = new ConfigurationBuilder().AddJsonStream(stream).Build();
         builder.Configuration.AddConfiguration(config);
+
+        builder.Services.AddAuthorizationCore(options =>
+        {
+            options.AddPolicy(
+                Policies.CanReviewTimesheets,
+                Policies.CanReviewTimesheetsPolicy());
+        });
 
         builder.Services.AddBlazoredToast();
         builder.Services.AddAutoMapper(typeof(TimesheetDTOProfile));

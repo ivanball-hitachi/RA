@@ -1,0 +1,109 @@
+﻿@page "/review_timesheets"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Policy = Policies.CanReviewTimesheets)]
+
+@using Domain.Common
+@using Domain.Main.DTO
+@using Domain.Timesheets.DTO
+@using RazorClassLibrary.Services
+@inject IEntityServices entityServices
+@inject NavigationManager navigationManager
+<h1>Timesheet List</h1>
+<hr />
+<br />
+<div class="row mb-3">
+    <div class="input-group col text-md-right">
+        <input type="text" class="form-control" placeholder="Search" @bind="this.searchValue" @onkeyup="SearchBoxKeyPress" />
+        <div class="input-group-btn">
+            <button class="btn btn-default" @onclick="SearchClick">
+                <i class="oi oi-magnifying-glass" title="search" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="input-group-btn">
+            <button class="btn btn-default" @onclick="ClearSearch">
+                <i class="oi oi-x" title="clear" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@if (timesheets is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th style="width:5%"></th>
+                <th style="width:15%">Number</th>
+                <th style="width:20%">Employee</th>
+                <th style="width:15%">Period start date</th>
+                <th style="width:15%">Period end date</th>
+                <th style="width:15%">Approval status</th>
+                <th style="width:15%">Total hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var timesheet in timesheets)
+            {
+                <tr>
+                    <td class="align-middle" style="white-space: nowrap">
+                    <NavLink href="@($"review_timesheet/{timesheet.Id}")" class="oi oi-eye text-primary mr-3 nounderline align-middle px-3"></NavLink>
+                    </td>
+                    <td class="align-middle">@timesheet.TimesheetNumber</td>
+                    <td class="align-middle">@timesheet.EmployeeFullName</td>
+                    <td class="align-middle">@timesheet.PeriodStartDate.ToString("MM/dd/yyyy")</td>
+                    <td class="align-middle">@timesheet.PeriodEndDate.ToString("MM/dd/yyyy")</td>
+                    <td class="align-middle">@timesheet.ApprovalStatusName</td>
+                    <td class="align-middle">@timesheet.TotalHours.ToString("0.00")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <Pager Result=@paginationMetadata PageChanged=PagerPageChanged />
+}
+
+@code {
+    private int currentPage = 1;
+    private string searchValue { get; set; } = default!;
+    private PaginationMetadata? paginationMetadata;
+    private IEnumerable<TimesheetDTO>? timesheets;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshPageAsync();
+    }
+
+    private async Task RefreshPageAsync()
+    {
+        (timesheets, paginationMetadata) = await entityServices.TimesheetService
+            .GetAllAsync(searchValue, currentPage, 10);
+        StateHasChanged();
+    }
+
+    protected async Task SearchBoxKeyPress(KeyboardEventArgs ev)
+    {
+        if (ev.Key == "Enter")
+        {
+            await SearchClick();
+        }
+    }
+
+    protected async Task SearchClick()
+    {
+        await RefreshPageAsync();
+    }
+
+    protected async Task ClearSearch()
+    {
+        searchValue = default!;
+        await RefreshPageAsync();
+    }
+
+    protected async Task PagerPageChanged(int page)
+    {
+        currentPage = page;
+        await RefreshPageAsync();
+    }
+}

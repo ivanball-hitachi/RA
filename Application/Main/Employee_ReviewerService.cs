@@ -5,48 +5,39 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Main
 {
-    internal class EmployeeService : IEntityService<Employee>
+    internal class Employee_ReviewerService : IEntityService<Employee_Reviewer>
     {
         #region Properties
         private readonly IUnitOfWork _unitOfWork;
         #endregion
 
         #region Ctor
-        public EmployeeService(IUnitOfWork unitOfWork)
+        public Employee_ReviewerService(IUnitOfWork unitOfWork)
 {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
         #endregion
 
         #region Queries
-        public async Task<IEnumerable<Employee>> GetAllAsync(bool includeChildren = false)
+        public async Task<IEnumerable<Employee_Reviewer>> GetAllAsync(bool includeChildren = false)
         {
             // collection to start from
-            var collection = _unitOfWork.EmployeeRepository.TableNoTracking;
+            var collection = _unitOfWork.Employee_ReviewerRepository.TableNoTracking;
 
             return await collection
-                .OrderBy(p => p.FirstName).ThenBy(p => p.LastName)
+                .OrderBy(p => p.EmployeeId)
                 .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Employee>, PaginationMetadata)> GetAllAsync(
+        public async Task<(IEnumerable<Employee_Reviewer>, PaginationMetadata)> GetAllAsync(
             string? searchValue, int pageNumber, int pageSize, bool includeFKs = false, bool includeChildren = false)
         {
             // collection to start from
-            var collection = _unitOfWork.EmployeeRepository.Table;
+            var collection = _unitOfWork.Employee_ReviewerRepository.Table;
 
             if (includeFKs)
             {
-                collection = collection.Include(p => p.EmployeeType);
-            }
-
-            if (!string.IsNullOrWhiteSpace(searchValue))
-            {
-                searchValue = searchValue.Trim();
-                collection = collection.Where(p => 
-                    p.FirstName.ToUpper().Contains(searchValue.ToUpper()) ||
-                    p.LastName.ToUpper().Contains(searchValue.ToUpper()) ||
-                    (p.FirstName + ' ' + p.LastName).ToUpper().Contains(searchValue.ToUpper()));
+                collection = collection.Include(p => p.Employee).Include(p => p.Reviewer);
             }
 
             var totalItemCount = await collection.CountAsync();
@@ -54,7 +45,7 @@ namespace Application.Main
             var paginationMetadata = new PaginationMetadata(
                 totalItemCount, pageSize, pageNumber);
 
-            var collectionToReturn = await collection.OrderBy(p => p.FirstName).ThenBy(p => p.LastName)
+            var collectionToReturn = await collection.OrderBy(p => p.EmployeeId)
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
                 .ToListAsync();
@@ -62,17 +53,18 @@ namespace Application.Main
             return (collectionToReturn, paginationMetadata);
         }
 
-        public async Task<Employee> GetByIdAsync(int id, bool includeFKs = false, bool includeChildren = false)
+        public async Task<Employee_Reviewer> GetByIdAsync(int id, bool includeFKs = false, bool includeChildren = false)
         {
             try
             {
                 var includes = new List<string>();
                 if (includeFKs)
                 {
-                    includes.Add("EmployeeType");
+                    includes.Add("Employee");
+                    includes.Add("Reviewer");
                 }
 
-                return await _unitOfWork.EmployeeRepository.Get(id, includes.ToArray());
+                return await _unitOfWork.Employee_ReviewerRepository.Get(id, includes.ToArray());
             }
             catch (Exception)
             {
@@ -85,7 +77,7 @@ namespace Application.Main
         {
             try
             {
-                return await _unitOfWork.EmployeeRepository.Exists(id);
+                return await _unitOfWork.Employee_ReviewerRepository.Exists(id);
             }
             catch (Exception)
             {
@@ -96,11 +88,11 @@ namespace Application.Main
         #endregion
 
         #region Command
-        public async Task AddAsync(Employee entity)
+        public async Task AddAsync(Employee_Reviewer entity)
         {
             try
             {
-                await _unitOfWork.EmployeeRepository.AddAsync(entity);
+                await _unitOfWork.Employee_ReviewerRepository.AddAsync(entity);
                 await _unitOfWork.SaveAsync();
             }
             catch (Exception)
@@ -110,11 +102,11 @@ namespace Application.Main
             }
         }
 
-        public async Task UpdateAsync(Employee entity)
+        public async Task UpdateAsync(Employee_Reviewer entity)
         {
             try
             {
-                _unitOfWork.EmployeeRepository.Update(entity);
+                _unitOfWork.Employee_ReviewerRepository.Update(entity);
                 await _unitOfWork.SaveAsync();
             }
             catch (Exception)
@@ -124,11 +116,11 @@ namespace Application.Main
             }
         }
 
-        public async Task<bool> DeleteAsync(Employee entity)
+        public async Task<bool> DeleteAsync(Employee_Reviewer entity)
         {
             try
             {
-                var IsDeleted = _unitOfWork.EmployeeRepository.Delete(entity);
+                var IsDeleted = _unitOfWork.Employee_ReviewerRepository.Delete(entity);
                 await _unitOfWork.SaveAsync();
                 return IsDeleted;
             }

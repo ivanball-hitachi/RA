@@ -1,0 +1,186 @@
+﻿@page "/review_timesheet/{Id:int}"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Policy = Policies.CanReviewTimesheets)]
+
+@using Domain.Common
+@using Domain.Main.DTO
+@using Domain.Timesheets.DTO
+@using RazorClassLibrary.Services
+@using AutoMapper
+@inject IEntityServices entityServices
+@inject IMapper mapper
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+<h2>Review Timesheet</h2>
+<hr />
+<div class="row col-lg-6">
+    <EditForm Model="@timesheet" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">TimesheetNumber</label>
+            <label class="col-sm-8 col-form-label">@timesheet.TimesheetNumber</label>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">Employee</label>
+            <label class="col-sm-8 col-form-label">@timesheet.EmployeeFullName</label>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">PeriodStartDate</label>
+            <label class="col-sm-8 col-form-label">@timesheet.PeriodStartDate.ToString("MM/dd/yyyy")</label>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">PeriodEndDate</label>
+            <label class="col-sm-8 col-form-label">@timesheet.PeriodEndDate.ToString("MM/dd/yyyy")</label>
+        </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">ApprovalStatus</label>
+            <label class="col-sm-8 col-form-label">@timesheet.ApprovalStatusName</label>
+        </div>
+        <button type="submit" @onclick="@(()=> action = "Approve")" class="mt-2 btn btn-primary">Approve</button>
+        <button type="submit" @onclick="@(()=> action = "Reject")" class="mt-2 btn btn-primary">Reject</button>
+        <NavLink href="/review_timesheets" class="btn btn-link">Back</NavLink>
+    </EditForm>
+</div>
+<br />
+<h1>Timesheet Lines</h1>
+<hr />
+<br />
+<div class="row mb-3">
+    <div class="input-group col-6 text-right">
+        <input type="text" class="form-control" placeholder="Search" @bind="this.searchValue" @onkeyup="SearchBoxKeyPress" />
+        <div class="input-group-btn">
+            <button class="btn btn-default" @onclick="SearchClick">
+                <i class="oi oi-magnifying-glass" title="search" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="input-group-btn">
+            <button class="btn btn-default" @onclick="ClearSearch">
+                <i class="oi oi-x" title="clear" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@if (timesheetLines is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Legal entity</th>
+                <th>Location</th>
+                <th>Customer</th>
+                <th>Project</th>
+                <th>Activity</th>
+                <th>Category</th>
+                @for (var i = 0; i < (timesheet.PeriodEndDate.Date - timesheet.PeriodStartDate.Date).Days + 1; i++)
+                {
+                    <th>@timesheet.PeriodStartDate.AddDays(i).ToString("ddd MM/dd")</th>
+                }
+                <th>Line property</th>
+                <th>Resource type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var timesheetLine in timesheetLines)
+            {
+                <tr>
+                    <td class="align-middle" style="white-space: nowrap">
+                        <NavLink href="@($"review_timesheetline/{Id}/{timesheetLine.Id}")" class="oi oi-eye text-primary mr-3 nounderline align-middle px-3"></NavLink>
+                    </td>
+                    <td class="align-middle">@timesheetLine.LegalEntityName</td>
+                    <td class="align-middle">@timesheetLine.LocationName</td>
+                    <td class="align-middle">@timesheetLine.CustomerName</td>
+                    <td class="align-middle">@timesheetLine.ProjectName</td>
+                    <td class="align-middle">@timesheetLine.ActivityName</td>
+                    <td class="align-middle">@timesheetLine.CategoryName</td>
+                    @foreach (var timesheetLineDetail in timesheetLine.TimesheetLineDetails)
+                    {
+                        <td class="align-middle">@(timesheetLineDetail.Hours == 0 ? "" : timesheetLineDetail.Hours.ToString("0.00"))</td>
+                    }
+                    <td class="align-middle">@timesheetLine.LinePropertyName</td>
+                    <td class="align-middle">@timesheetLine.EmployeeTypeName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <Pager Result=@paginationMetadata PageChanged=PagerPageChanged />
+}
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private int currentPage = 1;
+    private string searchValue { get; set; } = default!;
+    private PaginationMetadata? paginationMetadata;
+    private TimesheetDTO timesheet = new();
+    private List<TimesheetLineDTO>? timesheetLines;
+    private string action = "";
+
+    protected async override void OnParametersSet()
+    {
+        await RefreshPageAsync();
+    }
+
+    private async Task RefreshPageAsync()
+    {
+        var response = await entityServices.TimesheetService.GetByIdAsync(Id);
+        if (response is not null)
+        {
+            timesheet = mapper.Map<TimesheetDTO>(response);
+            (timesheetLines, paginationMetadata) = await entityServices.TimesheetLineService
+                .GetTimesheetLinesAsync(Id, searchValue, currentPage, 10);
+            StateHasChanged();
+        }
+    }
+
+    private async void HandleValidSubmit()
+    {
+        bool success = false;
+        var timesheetForUpdate = mapper.Map<TimesheetForUpdateDTO>(timesheet);
+        success = await entityServices.TimesheetService.UpdateAsync(timesheetForUpdate, action);
+
+        if (success)
+        {
+            navigationManager.NavigateTo($"review_timesheets");
+        }
+        else
+        {
+            toastService.ShowError("Something went wrong while saving record.");
+        }
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        toastService.ShowError("Please, correct invalid fields.");
+    }
+
+    protected async Task SearchBoxKeyPress(KeyboardEventArgs ev)
+    {
+        if (ev.Key == "Enter")
+        {
+            await SearchClick();
+        }
+    }
+
+    protected async Task SearchClick()
+    {
+        await RefreshPageAsync();
+    }
+
+    protected async Task ClearSearch()
+    {
+        searchValue = default!;
+        await RefreshPageAsync();
+    }
+
+    protected async Task PagerPageChanged(int page)
+    {
+        currentPage = page;
+        await RefreshPageAsync();
+    }
+}

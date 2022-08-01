@@ -10,6 +10,7 @@ namespace Application.Common.Interface
         IRepository<Category, int> CategoryRepository { get; }
         IRepository<Customer, int> CustomerRepository { get; }
         IRepository<Employee, int> EmployeeRepository { get; }
+        IRepository<Employee_Reviewer, int> Employee_ReviewerRepository { get; }
         IRepository<EmployeeType, int> EmployeeTypeRepository { get; }
         IRepository<LegalEntity, int> LegalEntityRepository { get; }
         IRepository<LineProperty, int> LinePropertyRepository { get; }

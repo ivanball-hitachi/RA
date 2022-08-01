@@ -32,6 +32,7 @@ namespace Infrastructure.Persistence
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Customer> Customers { get; set; } = null!;
         public DbSet<Employee> Employees { get; set; } = null!;
+        public DbSet<Employee_Reviewer> Employee_Reviewers { get; set; } = null!;
         public DbSet<EmployeeType> EmployeeTypes { get; set; } = null!;
         public DbSet<LegalEntity> LegalEntities { get; set; } = null!;
         public DbSet<LineProperty> LineProperties { get; set; } = null!;
@@ -93,9 +94,24 @@ namespace Infrastructure.Persistence
                new Employee()
                {
                    Id = 2,
-                   FirstName = "Arun",
-                   LastName = "Pandey",
+                   FirstName = "Ursula",
+                   LastName = "Conley",
                    EmployeeTypeId = 1
+               });
+
+            modelBuilder.Entity<Employee_Reviewer>()
+                .HasData(
+               new Employee_Reviewer()
+               {
+                   Id = 1,
+                   EmployeeId = 1,
+                   ReviewerId = 2
+               },
+               new Employee_Reviewer()
+               {
+                   Id = 2,
+                   EmployeeId = 2,
+                   ReviewerId = 2
                });
 
             modelBuilder.Entity<EmployeeType>()
@@ -121,6 +137,21 @@ namespace Infrastructure.Persistence
                new ApprovalStatus()
                {
                    Id = 2,
+                   Name = "In review"
+               },
+               new ApprovalStatus()
+               {
+                   Id = 3,
+                   Name = "Approved"
+               },
+               new ApprovalStatus()
+               {
+                   Id = 4,
+                   Name = "Rejected"
+               },
+               new ApprovalStatus()
+               {
+                   Id = 5,
                    Name = "Posted"
                });
 

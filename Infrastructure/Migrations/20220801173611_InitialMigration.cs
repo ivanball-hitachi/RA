@@ -186,6 +186,7 @@ namespace Infrastructure.Migrations
                     FirstName = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
                     LastName = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
                     EmployeeTypeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<int>(type: "INTEGER", nullable: false),
@@ -199,6 +200,37 @@ namespace Infrastructure.Migrations
                         name: "FK_Employee_EmployeeType_EmployeeTypeId",
                         column: x => x.EmployeeTypeId,
                         principalTable: "EmployeeType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employee_Reviewer",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    EmployeeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ReviewerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<int>(type: "INTEGER", nullable: false),
+                    LastModifiedOn = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    LastModifiedBy = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employee_Reviewer", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Employee_Reviewer_Employee_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Employee_Reviewer_Employee_ReviewerId",
+                        column: x => x.ReviewerId,
+                        principalTable: "Employee",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -371,7 +403,12 @@ namespace Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "ApprovalStatus",
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "Name" },
-                values: new object[] { 2, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, null, "Posted" });
+                values: new object[] { 2, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, null, "In review" });
+
+            migrationBuilder.InsertData(
+                table: "ApprovalStatus",
+                columns: new[] { "Id", "CreatedBy", "CreatedOn", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "Name" },
+                values: new object[] { 3, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, null, "Posted" });
 
             migrationBuilder.InsertData(
                 table: "Category",
@@ -510,18 +547,38 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Employee",
-                columns: new[] { "Id", "CreatedBy", "CreatedOn", "EmployeeTypeId", "FirstName", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "LastName" },
-                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Ivan", false, 0, null, "Ball-llovera" });
+                columns: new[] { "Id", "CreatedBy", "CreatedOn", "EmployeeTypeId", "FirstName", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "LastName", "UserId" },
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Ivan", false, 0, null, "Ball-llovera", null });
 
             migrationBuilder.InsertData(
                 table: "Employee",
-                columns: new[] { "Id", "CreatedBy", "CreatedOn", "EmployeeTypeId", "FirstName", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "LastName" },
-                values: new object[] { 2, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Arun", false, 0, null, "Pandey" });
+                columns: new[] { "Id", "CreatedBy", "CreatedOn", "EmployeeTypeId", "FirstName", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "LastName", "UserId" },
+                values: new object[] { 2, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Ursula", false, 0, null, "Conley", null });
+
+            migrationBuilder.InsertData(
+                table: "Employee_Reviewer",
+                columns: new[] { "Id", "CreatedBy", "CreatedOn", "EmployeeId", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "ReviewerId" },
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, false, 0, null, 2 });
+
+            migrationBuilder.InsertData(
+                table: "Employee_Reviewer",
+                columns: new[] { "Id", "CreatedBy", "CreatedOn", "EmployeeId", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "ReviewerId" },
+                values: new object[] { 2, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, false, 0, null, 2 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employee_EmployeeTypeId",
                 table: "Employee",
                 column: "EmployeeTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employee_Reviewer_EmployeeId",
+                table: "Employee_Reviewer",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employee_Reviewer_ReviewerId",
+                table: "Employee_Reviewer",
+                column: "ReviewerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Timesheet_ApprovalStatusId",
@@ -581,6 +638,9 @@ namespace Infrastructure.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Employee_Reviewer");
+
             migrationBuilder.DropTable(
                 name: "TimesheetLineDetail");
 

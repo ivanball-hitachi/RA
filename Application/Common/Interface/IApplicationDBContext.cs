@@ -11,6 +11,7 @@ namespace Application.Common.Interface
         DbSet<Category> Categories { get; set; }
         DbSet<Customer> Customers { get; set; }
         DbSet<Employee> Employees { get; set; }
+        DbSet<Employee_Reviewer> Employee_Reviewers { get; set; }
         DbSet<EmployeeType> EmployeeTypes { get; set; }
         DbSet<LegalEntity> LegalEntities { get; set; }
         DbSet<LineProperty> LineProperties { get; set; }

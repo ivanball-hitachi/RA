@@ -6,7 +6,7 @@
 @inject SignOutSessionStateManager SignOutManager
 @inject IIdentityService identityService
 
-<RemoteAuthenticatorView Action="@Action" OnLogOutSucceeded=@this.OnLogOutSucceeded OnLogInSucceeded=@this.OnLogInSucceeded>
+<RemoteAuthenticatorView Action="@Action" OnLogOutSucceeded=@OnLogOutSucceeded OnLogInSucceeded=@OnLogInSucceeded>
     <LogInFailed>
         <div class="alert alert-danger" role="alert">@strLogInFailed</div>
     </LogInFailed>
@@ -52,8 +52,8 @@
         {
             identityService.CurrentUser = new();
             identityService.CurrentUser.Id = user.Claims.FirstOrDefault(c => c.Type == "sub")!.Value;
-            identityService.CurrentUser.FirstName = user.Claims.FirstOrDefault(c => c.Type == "given_name")!.Value;
-            identityService.CurrentUser.LastName = user.Claims.FirstOrDefault(c => c.Type == "family_name")!.Value;
+            identityService.CurrentUser.FirstName = user.Claims.FirstOrDefault(c => c.Type == "given_name")?.Value!;
+            identityService.CurrentUser.LastName = user.Claims.FirstOrDefault(c => c.Type == "family_name")?.Value!;
             // Do some stuff
         }
     }
