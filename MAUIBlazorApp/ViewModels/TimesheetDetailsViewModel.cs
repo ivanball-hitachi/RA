@@ -12,7 +12,7 @@ public partial class TimesheetDetailsViewModel : BaseViewModel
     [ObservableProperty]
     TimesheetDTO timesheet;
 
-    [ICommand]
+    [RelayCommand]
     async Task OpenMap()
     {
         try

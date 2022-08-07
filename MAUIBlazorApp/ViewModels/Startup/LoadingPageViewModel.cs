@@ -32,7 +32,7 @@ namespace MAUIBlazorApp.ViewModels.Startup
 
                 if(jsonToken.ValidTo < DateTime.UtcNow)
                 {
-                    await Shell.Current.DisplayAlert("User session expired", "Login again To continue", "OK");
+                    //await Shell.Current.DisplayAlert("User session expired", "Login again To continue", "OK");
                     await Shell.Current.GoToAsync(nameof(LoginPage));
                 }
                 else

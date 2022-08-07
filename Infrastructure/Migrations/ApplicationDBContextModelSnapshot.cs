@@ -161,6 +161,24 @@ namespace Infrastructure.Migrations
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = 0,
+                            Name = "Approved"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            LastModifiedBy = 0,
+                            Name = "Rejected"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            LastModifiedBy = 0,
                             Name = "Posted"
                         });
                 });

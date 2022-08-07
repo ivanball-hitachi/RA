@@ -71,9 +71,11 @@ builder.Services.AddAuthorization(authorizationOptions =>
 builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = false;
-}).AddNewtonsoftJson()
-.AddXmlDataContractSerializerFormatters()
-.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
+})
+.AddNewtonsoftJson()
+.AddXmlDataContractSerializerFormatters();
+
+builder.Services.AddFluentValidationAutoValidation();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

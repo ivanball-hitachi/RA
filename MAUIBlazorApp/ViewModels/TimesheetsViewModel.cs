@@ -16,7 +16,7 @@ public partial class TimesheetsViewModel : BaseViewModel
         this.geolocation = geolocation;
     }
     
-    [ICommand]
+    [RelayCommand]
     async Task GoToDetails(TimesheetDTO timesheet)
     {
         if (timesheet is null)
@@ -31,7 +31,7 @@ public partial class TimesheetsViewModel : BaseViewModel
     [ObservableProperty]
     bool isRefreshing;
 
-    [ICommand]
+    [RelayCommand]
     async Task GetTimesheetsAsync()
     {
         if (IsBusy)
@@ -69,7 +69,7 @@ public partial class TimesheetsViewModel : BaseViewModel
 
     }
 
-    [ICommand]
+    [RelayCommand]
     async Task GetClosestTimesheet()
     {
         if (IsBusy || Timesheets.Count == 0)

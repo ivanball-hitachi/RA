@@ -12,7 +12,7 @@ namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/timesheets/{timesheetId}/timesheetlines")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TimesheetLinesController : ControllerBase
     {
         private readonly ITimesheetService _entityService;

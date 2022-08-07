@@ -6,8 +6,7 @@ namespace MAUIBlazorApp.ViewModels
 {
     public partial class AppShellViewModel : BaseViewModel
     {
-
-        [ICommand]
+        [RelayCommand]
         async void SignOut()
         {
             var _identityService = ServiceHelper.GetService<IIdentityService>();

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations.LoginFlowDB
 {
     [DbContext(typeof(LoginFlowDBContext))]
-    [Migration("20220801173628_InitialMigration")]
+    [Migration("20220801191939_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

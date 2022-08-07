@@ -408,7 +408,17 @@ namespace Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "ApprovalStatus",
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "Name" },
-                values: new object[] { 3, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, null, "Posted" });
+                values: new object[] { 3, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, null, "Approved" });
+
+            migrationBuilder.InsertData(
+                table: "ApprovalStatus",
+                columns: new[] { "Id", "CreatedBy", "CreatedOn", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "Name" },
+                values: new object[] { 4, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, null, "Rejected" });
+
+            migrationBuilder.InsertData(
+                table: "ApprovalStatus",
+                columns: new[] { "Id", "CreatedBy", "CreatedOn", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "Name" },
+                values: new object[] { 5, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, null, "Posted" });
 
             migrationBuilder.InsertData(
                 table: "Category",

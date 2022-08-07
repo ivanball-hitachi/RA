@@ -20,7 +20,7 @@ namespace MAUIBlazorApp.ViewModels.Startup
         }
 
         #region Commands
-        [ICommand]
+        [RelayCommand]
         async void Login()
         {
             if (!string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password))
@@ -63,7 +63,7 @@ namespace MAUIBlazorApp.ViewModels.Startup
             }
         }
 
-        [ICommand]
+        [RelayCommand]
         async void RegisterUser()
         {
             await Shell.Current.GoToAsync($"{nameof(RegisterPage)}");

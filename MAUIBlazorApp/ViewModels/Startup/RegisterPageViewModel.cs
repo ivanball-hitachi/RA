@@ -26,7 +26,7 @@ namespace MAUIBlazorApp.ViewModels.Startup
         }
 
         #region Commands
-        [ICommand]
+        [RelayCommand]
         async void RegisterUser()
         {
             if (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName) && 

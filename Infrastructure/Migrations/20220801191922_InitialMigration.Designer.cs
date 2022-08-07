@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20220801173611_InitialMigration")]
+    [Migration("20220801191922_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -159,6 +159,24 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 3,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            LastModifiedBy = 0,
+                            Name = "Approved"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            LastModifiedBy = 0,
+                            Name = "Rejected"
+                        },
+                        new
+                        {
+                            Id = 5,
                             CreatedBy = 0,
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
