@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using MAUIBlazorApp.Views.Startup;
 using MAUIBlazorApp.ViewModels.Startup;
 using Domain.Common;
+using Fluxor;
+using RazorClassLibrary.Store;
 
 namespace MAUIBlazorApp;
 
@@ -70,6 +72,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<RegisterPageViewModel>();
         builder.Services.AddSingleton<TimesheetsViewModel>();
         builder.Services.AddTransient<TimesheetDetailsViewModel>();
+
+        builder.Services.AddFluxor(options =>
+        {
+            options
+                .ScanAssemblies(typeof(CounterFeatureState).Assembly)
+                .UseReduxDevTools();
+        });
 
         return builder.Build();
     }

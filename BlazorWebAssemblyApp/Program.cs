@@ -2,10 +2,12 @@ using Blazored.Toast;
 using BlazorWebAssemblyApp;
 using BlazorWebAssemblyApp.Shared;
 using Domain.Common;
+using Fluxor;
 using Infrastructure.Persistence.Configuration.Timesheets;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using RazorClassLibrary.Services;
+using RazorClassLibrary.Store;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<Main>("#app");
@@ -36,5 +38,12 @@ builder.Services.AddScoped<IEntityServices, EntityServices>();
 builder.Services.AddApiAuthorization()
     .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 */
+builder.Services.AddFluxor(options =>
+{
+    options
+        .ScanAssemblies(typeof(CounterFeatureState).Assembly)
+        .UseReduxDevTools();
+});
+
 
 await builder.Build().RunAsync();
