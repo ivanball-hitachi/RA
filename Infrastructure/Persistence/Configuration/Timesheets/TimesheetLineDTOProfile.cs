@@ -16,6 +16,7 @@ namespace Infrastructure.Persistence.Configuration.Timesheets
                 .ForMember(dest => dest.ActivityName, opt => opt.MapFrom(src => src.Activity!.Name))
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category!.Name))
                 .ForMember(dest => dest.LinePropertyName, opt => opt.MapFrom(src => src.LineProperty!.Name))
+                .ForMember(dest => dest.ApprovalStatusName, opt => opt.MapFrom(src => src.ApprovalStatus!.Name))
                 .ForMember(dest => dest.EmployeeTypeName, opt => opt.MapFrom(src => src.Timesheet!.Employee!.EmployeeType!.Name))
                 .ForMember(dest => dest.PeriodStartDate, opt => opt.MapFrom(src => src.Timesheet.PeriodStartDate))
                 .ForMember(dest => dest.PeriodEndDate, opt => opt.MapFrom(src => src.Timesheet.PeriodEndDate))

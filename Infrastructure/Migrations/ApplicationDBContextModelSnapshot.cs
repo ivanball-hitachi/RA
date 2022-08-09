@@ -170,7 +170,7 @@ namespace Infrastructure.Migrations
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = 0,
-                            Name = "Rejected"
+                            Name = "Returned"
                         },
                         new
                         {
@@ -874,6 +874,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("ActivityId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ApprovalStatusId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER");
 
@@ -913,6 +916,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ActivityId");
+
+                    b.HasIndex("ApprovalStatusId");
 
                     b.HasIndex("CategoryId");
 
@@ -1064,6 +1069,12 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Main.ApprovalStatus", "ApprovalStatus")
+                        .WithMany()
+                        .HasForeignKey("ApprovalStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Main.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
@@ -1107,6 +1118,8 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Activity");
+
+                    b.Navigation("ApprovalStatus");
 
                     b.Navigation("Category");
 

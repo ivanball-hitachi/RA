@@ -198,6 +198,7 @@ namespace Application.Timesheets
                                         .Include(tsl => tsl.Activity)
                                         .Include(tsl => tsl.Category)
                                         .Include(tsl => tsl.LineProperty)
+                                        .Include(tsl => tsl.ApprovalStatus)
                                         .Include(tsl => tsl.Timesheet)
                                         .ThenInclude(ts => ts.Employee)
                                         .ThenInclude(e => e!.EmployeeType);
@@ -242,6 +243,7 @@ namespace Application.Timesheets
                     includes.Add("Activity");
                     includes.Add("Category");
                     includes.Add("LineProperty");
+                    includes.Add("ApprovalStatus");
                 }
                 if (includeChildren)
                 {

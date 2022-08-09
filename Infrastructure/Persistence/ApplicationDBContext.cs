@@ -147,7 +147,7 @@ namespace Infrastructure.Persistence
                new ApprovalStatus()
                {
                    Id = 4,
-                   Name = "Rejected"
+                   Name = "Returned"
                },
                new ApprovalStatus()
                {

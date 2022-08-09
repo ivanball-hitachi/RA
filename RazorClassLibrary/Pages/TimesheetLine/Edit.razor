@@ -108,6 +108,18 @@ else
                 <ValidationMessage For=@(() => timesheetLine.LinePropertyName) />
             </div>
         </div>
+        <div class="form-group mb-2 row">
+            <label class="col-sm-4 col-form-label">ApprovalStatus</label>
+            <div class="col-sm-8">
+                <InputSelect id="approvalStatus" @bind-Value="timesheetLine.ApprovalStatusId" class="form-control" disabled="disabled">
+                    @foreach (var approvalStatus in approvalStatuses)
+                    {
+                        <option value="@approvalStatus.Id">@approvalStatus.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For=@(() => timesheetLine.ApprovalStatusName) />
+            </div>
+        </div>
     </div>
 
     <table class="table table-striped table-bordered table-hover">
@@ -158,6 +170,7 @@ else
     private List<ActivityDTO> activities { get; set; } = new();
     private List<CategoryDTO> categories { get; set; } = new();
     private List<LinePropertyDTO> lineProperties { get; set; } = new();
+    private List<ApprovalStatusDTO> approvalStatuses { get; set; } = new();
 
     protected async override void OnParametersSet()
     {
@@ -168,6 +181,7 @@ else
         activities = (await entityServices.ActivityService.GetAllAsync())!.ToList();
         categories = (await entityServices.CategoryService.GetAllAsync())!.ToList();
         lineProperties = (await entityServices.LinePropertyService.GetAllAsync())!.ToList();
+        approvalStatuses = (await entityServices.ApprovalStatusService.GetAllAsync())!.ToList();
 
         timesheet = (await entityServices.TimesheetService.GetByIdAsync(TimesheetId))!;
 

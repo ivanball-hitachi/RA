@@ -28,5 +28,8 @@ public class TimesheetLine : AuditableWithBaseEntity<int>
     public LineProperty? LineProperty { get; set; }
     public int LinePropertyId { get; set; } = default;
 
+    public ApprovalStatus? ApprovalStatus { get; set; }
+    public int ApprovalStatusId { get; set; } = default;
+
     public List<TimesheetLineDetail> TimesheetLineDetails { get; set; } = new();
 }

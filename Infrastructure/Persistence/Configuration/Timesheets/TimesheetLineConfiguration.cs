@@ -34,6 +34,9 @@ namespace Infrastructure.Persistence.Configuration.Timesheets
             builder.HasOne(p => p.LineProperty)
                 .WithMany()
                 .HasForeignKey(p => p.LinePropertyId);
+            builder.HasOne(p => p.ApprovalStatus)
+                .WithMany()
+                .HasForeignKey(p => p.ApprovalStatusId);
             builder.Property(nameof(TimesheetLine.Id)).ValueGeneratedOnAdd();
         }
     }
@@ -62,6 +65,9 @@ namespace Infrastructure.Persistence.Configuration.Timesheets
 
             RuleFor(p => p.LinePropertyId)
                 .NotEmpty().WithMessage("Line Property is Required");
+
+            RuleFor(p => p.ApprovalStatusId)
+                .NotEmpty().WithMessage("Approval Status is Required");
 
             RuleForEach(x => x.TimesheetLineDetails).SetValidator(new TimesheetLineDetailDTOValidator());
         }

@@ -283,6 +283,7 @@ namespace Infrastructure.Migrations
                     ActivityId = table.Column<int>(type: "INTEGER", nullable: false),
                     CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
                     LinePropertyId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ApprovalStatusId = table.Column<int>(type: "INTEGER", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<int>(type: "INTEGER", nullable: false),
@@ -296,6 +297,12 @@ namespace Infrastructure.Migrations
                         name: "FK_TimesheetLine_Activity_ActivityId",
                         column: x => x.ActivityId,
                         principalTable: "Activity",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TimesheetLine_ApprovalStatus_ApprovalStatusId",
+                        column: x => x.ApprovalStatusId,
+                        principalTable: "ApprovalStatus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -413,7 +420,7 @@ namespace Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "ApprovalStatus",
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "IsDeleted", "LastModifiedBy", "LastModifiedOn", "Name" },
-                values: new object[] { 4, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, null, "Rejected" });
+                values: new object[] { 4, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, null, "Returned" });
 
             migrationBuilder.InsertData(
                 table: "ApprovalStatus",
@@ -604,6 +611,11 @@ namespace Infrastructure.Migrations
                 name: "IX_TimesheetLine_ActivityId",
                 table: "TimesheetLine",
                 column: "ActivityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TimesheetLine_ApprovalStatusId",
+                table: "TimesheetLine",
+                column: "ApprovalStatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TimesheetLine_CategoryId",

@@ -12,6 +12,8 @@ namespace Domain.Timesheets.DTO
         public int ActivityId { get; set; } = default;
         public int CategoryId { get; set; } = default;
         public int LinePropertyId { get; set; } = default;
+        public int ApprovalStatusId { get; set; } = 1;  // Initialize as "Draft" (ApprovalStatus.Id = 1 ?)
+
         public List<TimesheetLineDetailDTO> TimesheetLineDetails { get; set; } = new();
     }
 
@@ -25,6 +27,7 @@ namespace Domain.Timesheets.DTO
         public string? ActivityName { get; set; }
         public string? CategoryName { get; set; }
         public string? LinePropertyName { get; set; }
+        public string? ApprovalStatusName { get; set; }
         public string? EmployeeTypeName { get; set; }
         public DateTime PeriodStartDate { get; set; }
         public DateTime PeriodEndDate { get; set; }
