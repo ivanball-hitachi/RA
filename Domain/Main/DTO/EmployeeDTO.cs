@@ -1,20 +1,19 @@
 ﻿using Domain.Common;
-using Domain.Timesheets.DTO;
 
 namespace Domain.Main.DTO
 {
-    public class EmployeeBaseDTO : AuditableDTO
-    {
-        public string FirstName { get; set; } = default!;
-        public string LastName { get; set; } = default!;
-        public int EmployeeTypeId { get; set; } = default;
-        public string? UserId { get; set; } = default;
-    }
+    //public class EmployeeBaseDTO : AuditableDTO
+    //{
+    //    public string FirstName { get; set; } = default!;
+    //    public string LastName { get; set; } = default!;
+    //    public int EmployeeTypeId { get; set; } = default;
+    //    public string? UserId { get; set; } = default;
+    //}
 
-    public class EmployeeDTO : EmployeeBaseDTO, IBaseEntity<int>
+    public partial class EmployeeDTO : EmployeeBaseDTO, IBaseEntity<int>
     {
-        public int Id { get; set; }
-        public string? EmployeeTypeName { get; set; }
+        //public int Id { get; set; }
+        //public string? EmployeeTypeName { get; set; }
 
         public string FullName
         {
@@ -22,12 +21,12 @@ namespace Domain.Main.DTO
         }
     }
 
-    public class EmployeeForCreationDTO : EmployeeBaseDTO
-    {
-    }
+    //public class EmployeeForCreationDTO : EmployeeBaseDTO
+    //{
+    //}
 
-    public class EmployeeForUpdateDTO : EmployeeBaseDTO, IBaseEntity<int>
-    {
-        public int Id { get; set; }
-    }
+    //public class EmployeeForUpdateDTO : EmployeeBaseDTO, IBaseEntity<int>
+    //{
+    //    public int Id { get; set; }
+    //}
 }
