@@ -1,16 +1,12 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Generators.Model;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Generators;
-
-internal record struct PropertyDeclaration
-{
-    public string Name { get; set; }
-    public string DataType { get; set; }
-}
 
 [Generator]
 public class DTOClassGenerator : IIncrementalGenerator
@@ -23,7 +19,7 @@ public class DTOClassGenerator : IIncrementalGenerator
             .Where(static (target) => target is not null);
 
         context.RegisterSourceOutput(classes,
-            static (ctx, source) => Execute(ctx, source!));
+            static (ctx, source) => Execute(ctx, source));
 
         context.RegisterPostInitializationOutput(
             static (ctx) => PostInitializationOutput(ctx));
@@ -35,46 +31,59 @@ public class DTOClassGenerator : IIncrementalGenerator
             && classDeclarationSyntax.AttributeLists.Count > 0;
     }
 
-    private static AttributeSyntax? GetAttribute(SyntaxList<AttributeListSyntax> attributeLists, string attributeName)
+    private static ClassToGenerate? GetSemanticTarget(GeneratorSyntaxContext context)
     {
-        foreach (var attributeListSyntax in attributeLists)
-        {
-            foreach (var attributeSyntax in attributeListSyntax.Attributes)
-            {
-                var attributeSyntaxName = attributeSyntax.Name.ToString();
+        var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
+        var classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
+        var attributeSymbol = context.SemanticModel.Compilation.GetTypeByMetadataName(
+            "Generators.GenerateDTOClassAttribute");
 
-                if (attributeSyntaxName == attributeName
-                    || attributeSyntaxName == $"{attributeName}Attribute")
+        //Using the Semantic model
+        if (classSymbol is not null && attributeSymbol is not null)
+        {
+            foreach (var attributeData in classSymbol.GetAttributes())
+            {
+                if (attributeSymbol.Equals(attributeData.AttributeClass,
+                    SymbolEqualityComparer.Default))
                 {
-                    return attributeSyntax;
+                    var namespaceName = classSymbol.ContainingNamespace.ToDisplayString();
+                    var className = classSymbol.Name;
+                    var propertyDeclarations = new List<PropertyDeclaration>();
+
+                    foreach (var memberSymbol in classSymbol.GetMembers())
+                    {
+                        if (memberSymbol.Kind == SymbolKind.Property
+                            && memberSymbol.DeclaredAccessibility == Accessibility.Public)
+                        {
+                            var attributes = memberSymbol.GetAttributes();
+
+                            if (!attributes.Any(attr => 
+                                attr.AttributeClass!.Name.Equals("ExcludeFromCodeGeneration") ||
+                                attr.AttributeClass!.Name.Equals("ExcludeFromCodeGenerationAttribute")))
+                            {
+                                var typeSymbol = (memberSymbol as IPropertySymbol)!.Type;
+
+                                var attributeDeclarations = new List<AttributeDeclaration>();
+
+                                foreach (var attribute in attributes) 
+                                {
+                                    var name = attribute.AttributeClass!.Name.EndsWith("Attribute")? 
+                                        attribute.AttributeClass!.Name.Replace("Attribute", ""): 
+                                        attribute.AttributeClass!.Name;
+                                    var propertyName = attribute.NamedArguments.FirstOrDefault(arg => arg.Key.Equals("PropertyName")).Value.Value!.ToString();
+                                    var dataType = attribute.NamedArguments.FirstOrDefault(arg => arg.Key.Equals("DataType")).Value.Value!.ToString();
+                                    attributeDeclarations.Add(new AttributeDeclaration(name, propertyName, dataType));
+                                }
+
+                                propertyDeclarations.Add(new PropertyDeclaration(memberSymbol.Name, typeSymbol.ToString(), attributeDeclarations));
+                            }
+                        }
+                    }
+
+                    return new ClassToGenerate(namespaceName, className, propertyDeclarations);
                 }
             }
         }
-
-        return null;
-    }
-    private static string? GetAttributeArgument(AttributeArgumentListSyntax? argumentList, string attributeArgumentName)
-    {
-        if (argumentList == null) return null;
-
-        foreach (var attributeArgumentSyntax in argumentList.Arguments)
-        {
-            var attributeArgumentSyntaxName = attributeArgumentSyntax?.NameEquals?.Name.Identifier.Text;
-
-            if (attributeArgumentSyntaxName == attributeArgumentName)
-            {
-                return ((Microsoft.CodeAnalysis.CSharp.Syntax.LiteralExpressionSyntax)attributeArgumentSyntax?.Expression!).Token.ValueText;
-            }
-        }
-
-        return null;
-    }
-
-    private static ClassDeclarationSyntax? GetSemanticTarget(GeneratorSyntaxContext context)
-    {
-        var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
-
-        if (GetAttribute(classDeclarationSyntax.AttributeLists, "GenerateDTOClass") is not null) return classDeclarationSyntax;
 
         return null;
     }
@@ -102,85 +111,79 @@ public class DTOClassGenerator : IIncrementalGenerator
 }");
     }
 
-    private static void Execute(SourceProductionContext context, ClassDeclarationSyntax classDeclarationSyntax)
+    private static Dictionary<string, int> _countPerFileName = new();
+
+    private static void Execute(SourceProductionContext context, ClassToGenerate? classToGenerate)
     {
-        if (classDeclarationSyntax.Parent
-            is BaseNamespaceDeclarationSyntax namespaceDeclarationSyntax)
+        if (classToGenerate is null)
         {
-            var namespaceName = namespaceDeclarationSyntax.Name.ToString();
-            var className = classDeclarationSyntax.Identifier.Text;
-            var dtoClassName = $"{className}DTO";
-            var fileName = $"{dtoClassName}.g.cs";
-            var propertiesForBaseDTOClass = new List<PropertyDeclaration>();
-            var propertiesForDTOClass = new List<PropertyDeclaration>();
+            return;
+        }
 
-            foreach (var memberDeclarationSyntax in classDeclarationSyntax.Members)
+        var namespaceName = classToGenerate.NamespaceName;
+        var className = classToGenerate.ClassName;
+        var dtoClassName = $"{className}DTO";
+        var fileName = $"{dtoClassName}.g.cs";
+        var propertiesForBaseDTOClass = new List<PropertyDeclaration>();
+        var propertiesForDTOClass = new List<PropertyDeclaration>();
+
+        if (_countPerFileName.ContainsKey(fileName))
+        {
+            _countPerFileName[fileName]++;
+        }
+        else
+        {
+            _countPerFileName.Add(fileName, 1);
+        }
+
+        foreach (var propertyDeclaration in classToGenerate.PropertyDeclarations!)
+        {
+            var generateInDTOClassAttribute = propertyDeclaration.Attributes.FirstOrDefault(attr => attr.Name.Equals("GenerateInDTOClass"));
+
+            if (generateInDTOClassAttribute is null)
             {
-                if (memberDeclarationSyntax
-                    is PropertyDeclarationSyntax propertyDeclarationSyntax
-                    && propertyDeclarationSyntax.Modifiers.Any(SyntaxKind.PublicKeyword))
-                {
-                    if (GetAttribute(propertyDeclarationSyntax.AttributeLists, "ExcludeFromCodeGeneration") is null)
-                    {
-                        var generateInDTOClassAttribute = GetAttribute(propertyDeclarationSyntax.AttributeLists, "GenerateInDTOClass");
-
-                        if (generateInDTOClassAttribute is null)
-                        {
-                            propertiesForBaseDTOClass.Add(new PropertyDeclaration
-                            {
-                                Name = propertyDeclarationSyntax.Identifier.Text.Trim(),
-                                DataType = propertyDeclarationSyntax.Type.GetText().ToString().Trim()
-                            });
-                        }
-                        else
-                        {
-                            var propertyNameArgumentValue = GetAttributeArgument(generateInDTOClassAttribute.ArgumentList, "PropertyName");
-                            var dataTypeArgumentValue = GetAttributeArgument(generateInDTOClassAttribute.ArgumentList, "DataType");
-
-                            if (!string.IsNullOrEmpty(propertyNameArgumentValue) && !string.IsNullOrEmpty(dataTypeArgumentValue))
-                            propertiesForDTOClass.Add(new PropertyDeclaration
-                            {
-                                Name = propertyNameArgumentValue!,
-                                DataType = dataTypeArgumentValue!
-                            });
-                        }
-                    }
-                }
+                propertiesForBaseDTOClass.Add(new PropertyDeclaration(propertyDeclaration.Name, propertyDeclaration.DataType));
             }
+            else
+            {
+                propertiesForDTOClass.Add(new PropertyDeclaration(generateInDTOClassAttribute.PropertyName, generateInDTOClassAttribute.DataType));
+            }
+        }
 
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append($@"using Domain.Common;
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append($@"// Generation count: {_countPerFileName[fileName]}
+using Domain.Common;
 
 namespace {namespaceName}.DTO
 {{
     public partial class {className}BaseDTO : AuditableDTO
     {{
 ");
-            foreach (var propertyDeclaration in propertiesForBaseDTOClass)
-            {
-                if (propertyDeclaration.DataType.Contains("?")) stringBuilder.Append($@"#nullable enable
+        foreach (var propertyDeclaration in propertiesForBaseDTOClass)
+        {
+            if (propertyDeclaration.DataType.Contains("?")) stringBuilder.Append($@"#nullable enable
 ");
-                stringBuilder.Append($@"        public {propertyDeclaration.DataType} {propertyDeclaration.Name} {{ get; set; }} = default!;
+            stringBuilder.Append($@"        public {propertyDeclaration.DataType} {propertyDeclaration.Name} {{ get; set; }} = default!;
 ");
-                if (propertyDeclaration.DataType.Contains("?")) stringBuilder.Append($@"#nullable restore
+            if (propertyDeclaration.DataType.Contains("?")) stringBuilder.Append($@"#nullable restore
 ");
-            }
-            stringBuilder.Append($@"    }}
+        }
+        stringBuilder.Append($@"    }}
 
     public partial class {className}DTO : {className}BaseDTO, IBaseEntity<int>
     {{
         public int Id {{ get; set; }}
 ");
-            foreach (var propertyDeclaration in propertiesForDTOClass)
-            {
-                if (propertyDeclaration.DataType.Contains("?")) stringBuilder.Append($@"#nullable enable
+        foreach (var propertyDeclaration in propertiesForDTOClass)
+        {
+            if (propertyDeclaration.DataType.Contains("?")) stringBuilder.Append($@"#nullable enable
 ");
-                stringBuilder.Append($@"        public {propertyDeclaration.DataType} {propertyDeclaration.Name} {{ get; set; }}
+            stringBuilder.Append($@"        public {propertyDeclaration.DataType} {propertyDeclaration.Name} {{ get; set; }}
 ");
-                if (propertyDeclaration.DataType.Contains("?")) stringBuilder.Append($@"#nullable restore
+            if (propertyDeclaration.DataType.Contains("?")) stringBuilder.Append($@"#nullable restore
 ");
-            }
-            stringBuilder.Append($@"    }}
+        }
+        stringBuilder.Append($@"    }}
 
     public partial class {className}ForCreationDTO : {className}BaseDTO
     {{
@@ -192,7 +195,6 @@ namespace {namespaceName}.DTO
     }}
 }}");
 
-            context.AddSource(fileName, stringBuilder.ToString());
-        }
+        context.AddSource(fileName, stringBuilder.ToString());
     }
 }
