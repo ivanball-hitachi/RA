@@ -12,7 +12,7 @@ namespace Domain.Timesheets.DTO
         //public int ActivityId { get; set; } = default;
         //public int CategoryId { get; set; } = default;
         //public int LinePropertyId { get; set; } = default;
-        //public int ApprovalStatusId { get; set; } = 1;  // Initialize as "Draft" (ApprovalStatus.Id = 1 ?)
+        public int ApprovalStatusId { get; set; } = 1;  // Initialize as "Draft" (ApprovalStatus.Id = 1 ?)
 
         public List<TimesheetLineDetailDTO> TimesheetLineDetails { get; set; } = new();
     }

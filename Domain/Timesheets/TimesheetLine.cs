@@ -41,6 +41,7 @@ public class TimesheetLine : AuditableWithBaseEntity<int>
 
     [GenerateInDTOClass(PropertyName = "ApprovalStatusName", DataType = "string?")]
     public ApprovalStatus? ApprovalStatus { get; set; }
+    [ExcludeFromCodeGeneration]
     public int ApprovalStatusId { get; set; } = default;
 
     [ExcludeFromCodeGeneration]
