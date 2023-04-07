@@ -1,6 +1,9 @@
 ﻿using Domain.Common;
+using Generators;
 
 namespace Domain.Timesheets;
+
+[GenerateDTOClass]
 public class TimesheetLineDetail : AuditableWithBaseEntity<int>
 {
     public int TimesheetLineId { get; set; }
